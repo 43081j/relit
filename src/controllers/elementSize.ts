@@ -1,5 +1,6 @@
 import type {ReactiveController, ReactiveControllerHost} from 'lit';
 import type {Ref} from 'lit/directives/ref.js';
+import {ElementTrackingController} from '../_internal/elementTracking.js';
 
 export interface ElementSize {
   width: number;
@@ -22,25 +23,11 @@ const elementSizeToProperty: Record<ElementSizeType, ElementSizeProp> = {
 /**
  * Tracks the size of a given element
  */
-export class ElementSizeController implements ReactiveController {
+export class ElementSizeController extends ElementTrackingController {
   public size: ElementSize;
 
-  private __host: ReactiveControllerHost & Element;
   private __observer: ResizeObserver;
-  private __ref?: Ref;
   private __type: ElementSizeType;
-  private __lastElement: Element | undefined = undefined;
-
-  /**
-   * Gets the current element being observed
-   * @return {Element|undefined}
-   */
-  private get __element(): Element | undefined {
-    if (this.__ref) {
-      return this.__ref.value;
-    }
-    return this.__host;
-  }
 
   /**
    * @param {ReactiveControllerHost} host Host to attach to
@@ -52,15 +39,9 @@ export class ElementSizeController implements ReactiveController {
     type: ElementSizeType = 'content',
     ref?: Ref
   ) {
-    this.__host = host;
+    super(host, ref);
     this.__type = type;
     this.size = {width: 0, height: 0};
-
-    if (ref) {
-      this.__ref = ref;
-    }
-
-    this.__lastElement = this.__element;
 
     this.__observer = new ResizeObserver((entries) => this.__onResize(entries));
 
@@ -73,7 +54,7 @@ export class ElementSizeController implements ReactiveController {
    * @return {void}
    */
   private __onResize(entries: ResizeObserverEntry[]): void {
-    const element = this.__element;
+    const element = this._element;
     const entry = entries.find(({target}) => target === element);
 
     if (!entry) {
@@ -87,20 +68,19 @@ export class ElementSizeController implements ReactiveController {
       height: dimension.reduce((p, c) => p + c.blockSize, 0)
     };
 
-    this.__host.requestUpdate();
+    this._host.requestUpdate();
   }
 
   /** @inheritdoc */
-  public hostUpdated(): void {
-    const element = this.__element;
-    if (element !== this.__lastElement) {
-      this.__lastElement = element;
+  protected override _onElementChanged(): void {
+    super._onElementChanged();
 
-      this.__observer.disconnect();
+    this.__observer.disconnect();
 
-      if (element) {
-        this.__observer.observe(element);
-      }
+    const element = this._element;
+
+    if (element) {
+      this.__observer.observe(element);
     }
   }
 }

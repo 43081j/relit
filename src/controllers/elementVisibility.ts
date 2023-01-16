@@ -1,19 +1,22 @@
 import type {ReactiveController, ReactiveControllerHost} from 'lit';
+import type {Ref} from 'lit/directives/ref.js';
+import {ElementTrackingController} from '../_internal/elementTracking.js';
 
 /**
  * Tracks the visibility of an element
  */
-export class ElementVisibilityController implements ReactiveController {
+export class ElementVisibilityController extends ElementTrackingController {
   public visible: boolean = true;
 
-  private __host: ReactiveControllerHost & Element;
   private __boundOnScroll: () => void;
 
   /**
    * @param {ReactiveControllerHost} host Host to attach to
+   * @param {Ref=} ref Ref to observe instead of the host element
    */
-  public constructor(host: ReactiveControllerHost & Element) {
-    this.__host = host;
+  public constructor(host: ReactiveControllerHost & Element, ref?: Ref) {
+    super(host, ref);
+
     this.__boundOnScroll = this.__onScroll.bind(this);
     this.visible = this.__computeVisibility();
 
@@ -27,7 +30,7 @@ export class ElementVisibilityController implements ReactiveController {
   private __onScroll(): void {
     this.visible = this.__computeVisibility();
 
-    this.__host.requestUpdate();
+    this._host.requestUpdate();
   }
 
   /**
@@ -35,7 +38,14 @@ export class ElementVisibilityController implements ReactiveController {
    * @return {boolean}
    */
   private __computeVisibility(): boolean {
-    const rect = this.__host.getBoundingClientRect();
+    const element = this._element;
+
+    // Somehow the element doesn't exist, so leave the flag unchanged
+    if (!element) {
+      return this.visible;
+    }
+
+    const rect = element.getBoundingClientRect();
 
     return (
       rect.top <= window.innerHeight &&
