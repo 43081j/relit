@@ -1,0 +1,46 @@
+{
+  "name": "lit-toolkit",
+  "version": "0.0.1",
+  "description": "A collection of useful utilities for lit components",
+  "main": "lib/main.js",
+  "type": "module",
+  "files": [
+    "lib/!(test)"
+  ],
+  "scripts": {
+    "clean": "rimraf ./lib",
+    "lint": "eslint \"src/**/*.ts\"",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "test": "dunno",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run lint && npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/43081j/lit-toolkit.git"
+  },
+  "author": "James Garbutt (https://github.com/43081j)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/43081j/lit-toolkit/issues"
+  },
+  "homepage": "https://github.com/43081j/lit-toolkit#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.47.1",
+    "@typescript-eslint/parser": "^5.47.1",
+    "eslint": "^8.30.0",
+    "eslint-config-google": "^0.14.0",
+    "lit": "^2.5.0",
+    "prettier": "^2.8.1",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.9.4"
+  },
+  "peerDependencies": {
+    "lit": "^2.5.0"
+  },
+  "dependencies": {
+    "tslib": "^2.4.1"
+  }
+}

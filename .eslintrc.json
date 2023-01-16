@@ -1,0 +1,40 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "google",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "indent": "off",
+    "quote-props": "off",
+    "max-len": "error",
+    "no-unused-vars": "off",
+    "operator-linebreak": "off",
+    "brace-style": "off",
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "quotes": [
+      "error",
+      "single",
+      {
+        "allowTemplateLiterals": true
+      }
+    ],
+    "no-useless-escape": "off",
+    "@typescript-eslint/explicit-function-return-type": [
+      "error",
+      {
+        "allowExpressions": true
+      }
+    ],
+    "@typescript-eslint/explicit-member-accessibility": "error",
+    "@typescript-eslint/member-delimiter-style": "error",
+    "@typescript-eslint/no-array-constructor": "error",
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-parameter-properties": "error",
+    "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/no-unused-vars": "off"
+  }
+}
