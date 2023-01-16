@@ -24,7 +24,7 @@ export class ActiveElementController implements ReactiveController {
 
     this.activeElement = doc.activeElement;
 
-    host.addController(this as ReactiveController);
+    host.addController(this);
   }
 
   /**
