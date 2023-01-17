@@ -1,33 +1,19 @@
-import {LitElement, html, TemplateResult} from 'lit';
+import '../util.js';
+
+import {html} from 'lit';
 import * as assert from 'uvu/assert';
 import {ActiveElementController} from '../../controllers/activeElement.js';
-
-/**
- * Test element with controller
- */
-class TestElement extends LitElement {
-  public controller: ActiveElementController;
-
-  /** @inheritdoc */
-  public constructor() {
-    super();
-
-    this.controller = new ActiveElementController(this);
-  }
-
-  /** @inheritdoc */
-  protected override render(): TemplateResult {
-    return html`${this.controller.activeElement?.nodeName}`;
-  }
-}
-
-customElements.define('test-active-element', TestElement);
+import type {TestElement} from '../util.js';
 
 suite('ActiveElementController', () => {
   let element: TestElement;
+  let controller: ActiveElementController;
 
   setup(async () => {
-    element = document.createElement('test-active-element') as TestElement;
+    element = document.createElement('test-element') as TestElement;
+    controller = new ActiveElementController(element);
+    element.controllers.push(controller);
+    element.template = () => html`${controller.activeElement?.nodeName}`;
     document.body.appendChild(element);
   });
 
@@ -36,10 +22,8 @@ suite('ActiveElementController', () => {
   });
 
   test('initialises to current active element', () => {
-    assert.equal(
-      element.controller.activeElement,
-      document.activeElement
-    );
+    assert.equal(controller.activeElement, document.activeElement);
+    assert.equal(element.shadowRoot!.textContent, 'BODY');
   });
 
   test('updates active element on focus change', async () => {
@@ -58,7 +42,7 @@ suite('ActiveElementController', () => {
 
       await element.updateComplete;
 
-      assert.equal(element.controller.activeElement, input);
+      assert.equal(controller.activeElement, input);
       assert.equal(element.shadowRoot!.textContent, 'INPUT');
 
       input.blur();
@@ -71,7 +55,7 @@ suite('ActiveElementController', () => {
 
       await element.updateComplete;
 
-      assert.equal(element.controller.activeElement, document.body);
+      assert.equal(controller.activeElement, document.body);
       assert.equal(element.shadowRoot!.textContent, 'BODY');
     } finally {
       input.remove();

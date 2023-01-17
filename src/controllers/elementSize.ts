@@ -1,4 +1,4 @@
-import type {ReactiveController, ReactiveControllerHost} from 'lit';
+import type {ReactiveControllerHost} from 'lit';
 import type {Ref} from 'lit/directives/ref.js';
 import {ElementTrackingController} from '../_internal/elementTracking.js';
 
@@ -18,6 +18,15 @@ const elementSizeToProperty: Record<ElementSizeType, ElementSizeProp> = {
   content: 'contentBoxSize',
   border: 'borderBoxSize',
   device: 'devicePixelContentBoxSize'
+};
+
+const elementSizeToObserverOption: Record<
+  ElementSizeType,
+  ResizeObserverBoxOptions
+> = {
+  content: 'content-box',
+  border: 'border-box',
+  device: 'device-pixel-content-box'
 };
 
 /**
@@ -45,7 +54,7 @@ export class ElementSizeController extends ElementTrackingController {
 
     this.__observer = new ResizeObserver((entries) => this.__onResize(entries));
 
-    host.addController(this as ReactiveController);
+    host.addController(this);
   }
 
   /**
@@ -80,7 +89,8 @@ export class ElementSizeController extends ElementTrackingController {
     const element = this._element;
 
     if (element) {
-      this.__observer.observe(element);
+      const box = elementSizeToObserverOption[this.__type];
+      this.__observer.observe(element, {box});
     }
   }
 }
