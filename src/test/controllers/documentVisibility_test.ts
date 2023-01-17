@@ -13,7 +13,7 @@ suite('DocumentVisibilityController', () => {
     element = document.createElement('test-element');
     controller = new DocumentVisibilityController(element);
     element.controllers.push(controller);
-    element.template = () => html`${controller.visible}`;
+    element.template = () => html`${controller.visibility}`;
     document.body.appendChild(element);
   });
 
@@ -22,7 +22,7 @@ suite('DocumentVisibilityController', () => {
   });
 
   test('initialises to current visibility', () => {
-    assert.equal(controller.visible, document.visibilityState);
+    assert.equal(controller.visibility, document.visibilityState);
     assert.equal(element.shadowRoot!.textContent, 'visible');
   });
 
