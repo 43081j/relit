@@ -7,7 +7,9 @@
   "rules": {
     "indent": "off",
     "quote-props": "off",
-    "max-len": "error",
+    "max-len": ["error", {
+      "ignorePattern": "^import "
+    }],
     "no-unused-vars": "off",
     "operator-linebreak": "off",
     "brace-style": "off",
