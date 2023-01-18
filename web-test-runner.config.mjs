@@ -5,6 +5,9 @@ export default {
   nodeResolve: true,
   files: ['src/**/*_test.ts'],
   coverage: true,
+  coverageConfig: {
+    reporters: ['lcov', 'html']
+  },
   browsers: [
     puppeteerLauncher()
   ],

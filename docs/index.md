@@ -11,3 +11,4 @@ The following is the full list of available helpers:
 - [lastChanged](./lastChanged.md) - change history of a property with undo/redo
 - [localStorage](./localStorage.md) - items in [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
 - [sessionStorage](./sessionStorage.md) - items in [sessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage)
+- [itemSelection](./itemSelection.md) - manages selection within an array of items
