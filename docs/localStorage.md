@@ -14,7 +14,7 @@ class MyElement extends LitElement {
   }
 
   render() {
-    const val = JSON.stringify(this._localStorageCtrl.value;
+    const val = JSON.stringify(this._localStorageCtrl.value);
 
     return html`
       someKey currently has the value: ${val}.
