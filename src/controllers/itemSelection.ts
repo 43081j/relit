@@ -1,8 +1,9 @@
 import type {ReactiveController, ReactiveControllerHost} from 'lit';
 
-export interface ItemSelectionOptions {
+export interface ItemSelectionOptions<T> {
   multiSelect?: boolean;
   defaultSelectedIndices?: number[];
+  defaultSelection?: T[];
 }
 
 /**
@@ -28,7 +29,7 @@ export class ItemSelectionController<T> {
   private __selectedIndices: Set<number> = new Set<number>();
   private __items: T[] = [];
   private __host: ReactiveControllerHost;
-  private __options?: ItemSelectionOptions;
+  private __options?: ItemSelectionOptions<T>;
 
   /**
    * @param {ReactiveControllerHost} host Host to attach to
@@ -38,7 +39,7 @@ export class ItemSelectionController<T> {
   public constructor(
     host: ReactiveControllerHost,
     items: T[],
-    options?: ItemSelectionOptions
+    options?: ItemSelectionOptions<T>
   ) {
     this.__host = host;
     this.__items = items;
@@ -49,6 +50,10 @@ export class ItemSelectionController<T> {
       if (options.defaultSelectedIndices) {
         for (const idx of options.defaultSelectedIndices) {
           this.selectByIndex(idx);
+        }
+      } else if (options.defaultSelection) {
+        for (const item of options.defaultSelection) {
+          this.select(item);
         }
       }
     }

@@ -67,13 +67,39 @@ only function with a single selection):
 
 ### `options.defaultSelectedIndices`
 
-You can specify the default selection via this option, using the indices.
+You can specify the item indices to select by default using this option.
 
-This is useful when you want to default to the item at a particular position
-rather than a particular item.
+For example:
 
-For example, it is possible to select the first item by default. You can do
-this by setting `defaultSelectedIndices: [0]`.
+```ts
+const items = ['a', 'b', 'c'];
+
+const ctrl = new ItemSelectionController(
+  this,
+  items,
+  { defaultSelectedIndices: [1] }
+);
+
+// ctrl will default to `b` being selected as it is at index 1.
+```
+
+### `options.defaultSelection`
+
+You can specify the items to select by default using this option.
+
+For example:
+
+```ts
+const items = ['a', 'b', 'c'];
+
+const ctrl = new ItemSelectionController(
+  this,
+  items,
+  { defaultSelection: ['b'] }
+);
+
+// ctrl will default to `b` being selected
+```
 
 ## Methods
 

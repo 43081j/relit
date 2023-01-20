@@ -377,4 +377,35 @@ suite('ItemSelectionController', () => {
       assert.equal(element.shadowRoot!.textContent, 'Selected: b');
     });
   });
+
+  suite('multi select with defaultSelection', () => {
+    setup(async () => {
+      controller = new ItemSelectionController<string>(element, items, {
+        defaultSelection: ['b', 'c'],
+        multiSelect: true
+      });
+      element.controllers.push(controller as ReactiveController);
+      document.body.appendChild(element);
+    });
+
+    test('initialises to default selection', () => {
+      assert.equal(controller.selectedItems, ['b', 'c']);
+      assert.equal(element.shadowRoot!.textContent, 'Selected: bc');
+    });
+  });
+
+  suite('single select with defaultSelection', () => {
+    setup(async () => {
+      controller = new ItemSelectionController<string>(element, items, {
+        defaultSelection: ['b']
+      });
+      element.controllers.push(controller as ReactiveController);
+      document.body.appendChild(element);
+    });
+
+    test('initialises to default selection', () => {
+      assert.equal(controller.selectedItems, ['b']);
+      assert.equal(element.shadowRoot!.textContent, 'Selected: b');
+    });
+  });
 });
