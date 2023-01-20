@@ -105,6 +105,20 @@ suite('ItemSelectionController', () => {
       });
     });
 
+    suite('selectAll', () => {
+      test('throws an error', async () => {
+        try {
+          controller.selectAll();
+          assert.unreachable();
+        } catch (err) {
+          assert.equal(
+            (err as Error).message,
+            'selectAll() cannot be used when in single-select mode'
+          );
+        }
+      });
+    });
+
     suite('deselectByIndex()', () => {
       test('deselects the item at the given index', async () => {
         controller.select('b');
@@ -301,6 +315,15 @@ suite('ItemSelectionController', () => {
         await element.updateComplete;
         assert.equal(controller.selectedItems, []);
         assert.equal(element.shadowRoot!.textContent, 'Selected: ');
+      });
+    });
+
+    suite('selectAll', () => {
+      test('selects all items', async () => {
+        controller.selectAll();
+        await element.updateComplete;
+        assert.equal(controller.selectedItems, ['a', 'b', 'c']);
+        assert.equal(element.shadowRoot!.textContent, 'Selected: abc');
       });
     });
 

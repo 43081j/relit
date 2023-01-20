@@ -129,6 +129,20 @@ export class ItemSelectionController<T> {
   }
 
   /**
+   * Selects all items
+   * @return {void}
+   */
+  public selectAll(): void {
+    if (this.__options?.multiSelect !== true) {
+      throw new Error('selectAll() cannot be used when in single-select mode');
+    }
+
+    for (const item of this.__items) {
+      this.select(item);
+    }
+  }
+
+  /**
    * Deselects all items
    * @return {void}
    */
