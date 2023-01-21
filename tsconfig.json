@@ -23,7 +23,8 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true
+    "noPropertyAccessFromIndexSignature": true,
+    "useDefineForClassFields": false
   },
   "include": ["src/**/*.ts"]
 }

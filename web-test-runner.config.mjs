@@ -12,7 +12,11 @@ export default {
     puppeteerLauncher()
   ],
   plugins: [
-    esbuildPlugin({ts: true, target: 'auto'})
+    esbuildPlugin({
+      ts: true,
+      target: 'auto',
+      tsconfig: './tsconfig.json'
+    })
   ],
   testFramework: {
     config: {

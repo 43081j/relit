@@ -14,6 +14,7 @@ export class LastChangedController<
   private __propertyName: TKey;
   private __history: Array<T[TKey]>;
   private __historyLimit: number = 4;
+  private __historyIndex: number = -1;
 
   /**
    * @param {ReactiveControllerHost} host Host to attach to
@@ -26,17 +27,25 @@ export class LastChangedController<
     this.__propertyName = property;
     this.__history = [value];
 
-    host.addController(this as ReactiveController);
+    host.addController(this);
   }
 
   /** @inheritdoc */
   public hostUpdate(): void {
-    const currentValue = this.__host[this.__propertyName];
-    const lastValue = this.__history[this.__history.length - 1];
+    const newValue = this.__host[this.__propertyName];
+    const maxIndex = this.__history.length - 1;
+    const currentIndex =
+      this.__historyIndex === -1 ? maxIndex : this.__historyIndex;
+    const currentValue = this.__history[currentIndex];
 
-    if (currentValue !== lastValue) {
+    if (newValue !== currentValue) {
       this.lastChanged = new Date();
-      this.__history.push(currentValue);
+      this.__history.splice(
+        currentIndex + 1,
+        maxIndex - currentIndex,
+        newValue
+      );
+      this.__historyIndex = -1;
 
       if (this.__history.length > this.__historyLimit) {
         this.__history.shift();
@@ -68,10 +77,10 @@ export class LastChangedController<
    * @return {void}
    */
   private __restoreValueByOffset(offset: number): void {
-    const currentValue = this.__host[this.__propertyName];
-    const currentIndex = this.__history.indexOf(currentValue);
-    const newIndex = currentIndex + offset;
     const maxIndex = this.__history.length - 1;
+    const currentIndex =
+      this.__historyIndex === -1 ? maxIndex : this.__historyIndex;
+    const newIndex = currentIndex + offset;
 
     if (currentIndex < 0 || newIndex < 0 || newIndex > maxIndex) {
       return;
@@ -80,5 +89,8 @@ export class LastChangedController<
     const prevValue = this.__history[newIndex] as T[TKey];
 
     this.__host[this.__propertyName] = prevValue;
+    this.__historyIndex = newIndex === maxIndex ? -1 : newIndex;
+    this.lastChanged = new Date();
+    this.__host.requestUpdate();
   }
 }

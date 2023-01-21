@@ -4,9 +4,9 @@ import type {ReactiveController, TemplateResult} from 'lit';
 type TestTemplateFn = () => TemplateResult;
 
 /**
- * Test element with controller
+ * Base of all test elements
  */
-export class TestElement extends LitElement {
+export abstract class TestElementBase extends LitElement {
   public static override styles = css`
     :host {
       display: block;
@@ -20,6 +20,11 @@ export class TestElement extends LitElement {
     return this.template?.() ?? html``;
   }
 }
+
+/**
+ * Test element with controllers
+ */
+export class TestElement extends TestElementBase {}
 
 customElements.define('test-element', TestElement);
 
