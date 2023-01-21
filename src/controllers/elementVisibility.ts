@@ -8,7 +8,7 @@ import {ElementTrackingController} from '../_internal/elementTracking.js';
 export class ElementVisibilityController extends ElementTrackingController {
   public visible: boolean = true;
 
-  private __boundOnScroll: () => void;
+  private __observer: IntersectionObserver;
 
   /**
    * @param {ReactiveControllerHost} host Host to attach to
@@ -17,53 +17,65 @@ export class ElementVisibilityController extends ElementTrackingController {
   public constructor(host: ReactiveControllerHost & Element, ref?: Ref) {
     super(host, ref);
 
-    this.__boundOnScroll = this.__onScroll.bind(this);
-    this.visible = this.__computeVisibility();
+    this.__observer = new IntersectionObserver(
+      (entries) => this.__onIntersectionChange(entries),
+      {threshold: 1}
+    );
+
+    const el = this._element;
+
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      this.visible = this.__computeVisibilityFromRect(rect);
+    }
 
     host.addController(this as ReactiveController);
   }
 
   /**
-   * Fired when a scroll event occurs
+   * Fires when the intersection observer is triggered
+   * @param {IntersectionObserverEntry[]} entries Intersection changes
    * @return {void}
    */
-  private __onScroll(): void {
-    this.visible = this.__computeVisibility();
+  private __onIntersectionChange(entries: IntersectionObserverEntry[]): void {
+    const el = this._element;
 
+    if (!el) {
+      return;
+    }
+
+    const entry = entries.find((e) => e.target === el);
+
+    if (!entry) {
+      return;
+    }
+
+    this.visible = entry.isIntersecting;
     this._host.requestUpdate();
   }
 
+  /** @inheritdoc */
+  protected override _onElementChanged(): void {
+    this.__observer.disconnect();
+
+    const el = this._element;
+
+    if (el) {
+      this.__observer.observe(el);
+    }
+  }
+
   /**
-   * Computes the visibility of the element
+   * Computes the visibility from a DOM rect
+   * @param {DOMRect} rect Rect to calculate visibility from
    * @return {boolean}
    */
-  private __computeVisibility(): boolean {
-    const element = this._element;
-
-    // Somehow the element doesn't exist, so leave the flag unchanged
-    if (!element) {
-      return this.visible;
-    }
-
-    const rect = element.getBoundingClientRect();
-
+  private __computeVisibilityFromRect(rect: DOMRect): boolean {
     return (
       rect.top <= window.innerHeight &&
       rect.left <= window.innerWidth &&
       rect.bottom >= 0 &&
       rect.right >= 0
     );
-  }
-
-  /** @inheritdoc */
-  public hostConnected(): void {
-    window.document.addEventListener('scroll', this.__boundOnScroll, {
-      passive: true
-    });
-  }
-
-  /** @inheritdoc */
-  public hostDisconnected(): void {
-    window.document.removeEventListener('scroll', this.__boundOnScroll);
   }
 }

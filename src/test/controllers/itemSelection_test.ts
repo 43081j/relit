@@ -2,7 +2,7 @@ import '../util.js';
 
 import {html, ReactiveController} from 'lit';
 import * as assert from 'uvu/assert';
-import {ItemSelectionController} from '../../controllers/itemSelection.js';
+import {ItemSelectionController} from '../../main.js';
 import type {TestElement} from '../util.js';
 
 suite('ItemSelectionController', () => {

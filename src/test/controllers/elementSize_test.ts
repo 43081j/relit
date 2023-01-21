@@ -4,7 +4,7 @@ import {html} from 'lit';
 import * as assert from 'uvu/assert';
 import {createRef, ref} from 'lit/directives/ref.js';
 import type {Ref} from 'lit/directives/ref.js';
-import {ElementSizeController} from '../../controllers/elementSize.js';
+import {ElementSizeController} from '../../main.js';
 import type {TestElement} from '../util.js';
 
 suite('DocumentVisibilityController', () => {

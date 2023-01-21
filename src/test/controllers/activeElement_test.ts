@@ -2,7 +2,7 @@ import '../util.js';
 
 import {html} from 'lit';
 import * as assert from 'uvu/assert';
-import {ActiveElementController} from '../../controllers/activeElement.js';
+import {ActiveElementController} from '../../main.js';
 import type {TestElement} from '../util.js';
 
 suite('ActiveElementController', () => {

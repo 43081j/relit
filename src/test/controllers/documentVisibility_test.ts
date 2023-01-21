@@ -2,7 +2,7 @@ import '../util.js';
 
 import {html} from 'lit';
 import * as assert from 'uvu/assert';
-import {DocumentVisibilityController} from '../../controllers/documentVisibility.js';
+import {DocumentVisibilityController} from '../../main.js';
 import type {TestElement} from '../util.js';
 
 suite('DocumentVisibilityController', () => {
