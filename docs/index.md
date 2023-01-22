@@ -10,6 +10,7 @@ The following is the full list of available helpers:
 - [elementVisibility](./elementVisibility.md) - element visibility
 - [itemSelection](./itemSelection.md) - manages selection within an array of items
 - [localStorage](./localStorage.md) - items in [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
+- [markdown](./markdown.md) - markdown processing via [marked](https://github.com/markedjs/marked)
 - [permissions](./permissions.md) - track the state of a browser [permission](https://developer.mozilla.org/en-US/docs/Web/API/Permissions/query)
 - [propertyHistory](./propertyHistory.md) - track the history of a property with undo/redo
 - [sessionStorage](./sessionStorage.md) - items in [sessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage)

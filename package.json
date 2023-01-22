@@ -46,6 +46,8 @@
     "lit": "^2.5.0"
   },
   "dependencies": {
+    "@types/marked": "^4.0.8",
+    "marked": "^4.2.12",
     "tslib": "^2.4.1"
   }
 }
