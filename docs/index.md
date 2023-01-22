@@ -12,3 +12,4 @@ The following is the full list of available helpers:
 - [localStorage](./localStorage.md) - items in [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
 - [propertyHistory](./propertyHistory.md) - track the history of a property with undo/redo
 - [sessionStorage](./sessionStorage.md) - items in [sessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage)
+- [windowScroll](./windowScroll.md) - track the window scroll offset

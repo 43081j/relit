@@ -6,3 +6,4 @@ export * from './controllers/itemSelection.js';
 export * from './controllers/localStorage.js';
 export * from './controllers/propertyHistory.js';
 export * from './controllers/sessionStorage.js';
+export * from './controllers/windowScroll.js';
