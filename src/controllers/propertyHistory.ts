@@ -1,18 +1,38 @@
 import type {ReactiveController, ReactiveControllerHost} from 'lit';
 
+export interface PropertyHistoryEntry<T> {
+  value: T;
+  date: Date;
+}
+
 /**
- * Tracks the last time a property was changed
+ * Tracks the history of a given property
  */
-export class LastChangedController<
+export class PropertyHistoryController<
   T extends ReactiveControllerHost,
   TKey extends keyof T
 > implements ReactiveController
 {
-  public lastChanged: Date | undefined = undefined;
+  /**
+   * Gets the date of the last change
+   * @return {Date|undefined}
+   */
+  public get lastChanged(): Date | undefined {
+    return this.__history[this.__currentIndex]?.date;
+  }
+
+  /**
+   * Gets the current history index
+   * @return {number}
+   */
+  private get __currentIndex(): number {
+    const maxIndex = this.__history.length - 1;
+    return this.__historyIndex === -1 ? maxIndex : this.__historyIndex;
+  }
 
   private __host: T;
   private __propertyName: TKey;
-  private __history: Array<T[TKey]>;
+  private __history: Array<PropertyHistoryEntry<T[TKey]>>;
   private __historyLimit: number = 4;
   private __historyIndex: number = -1;
 
@@ -25,7 +45,12 @@ export class LastChangedController<
 
     this.__host = host;
     this.__propertyName = property;
-    this.__history = [value];
+    this.__history = [
+      {
+        value,
+        date: new Date()
+      }
+    ];
 
     host.addController(this);
   }
@@ -34,17 +59,14 @@ export class LastChangedController<
   public hostUpdate(): void {
     const newValue = this.__host[this.__propertyName];
     const maxIndex = this.__history.length - 1;
-    const currentIndex =
-      this.__historyIndex === -1 ? maxIndex : this.__historyIndex;
+    const currentIndex = this.__currentIndex;
     const currentValue = this.__history[currentIndex];
 
-    if (newValue !== currentValue) {
-      this.lastChanged = new Date();
-      this.__history.splice(
-        currentIndex + 1,
-        maxIndex - currentIndex,
-        newValue
-      );
+    if (newValue !== currentValue?.value) {
+      this.__history.splice(currentIndex + 1, maxIndex - currentIndex, {
+        value: newValue,
+        date: new Date()
+      });
       this.__historyIndex = -1;
 
       if (this.__history.length > this.__historyLimit) {
@@ -78,19 +100,22 @@ export class LastChangedController<
    */
   private __restoreValueByOffset(offset: number): void {
     const maxIndex = this.__history.length - 1;
-    const currentIndex =
-      this.__historyIndex === -1 ? maxIndex : this.__historyIndex;
+    const currentIndex = this.__currentIndex;
     const newIndex = currentIndex + offset;
+    const prevValue = this.__history[newIndex];
 
-    if (currentIndex < 0 || newIndex < 0 || newIndex > maxIndex) {
+    if (
+      currentIndex < 0 ||
+      newIndex < 0 ||
+      newIndex > maxIndex ||
+      prevValue === undefined
+    ) {
       return;
     }
 
-    const prevValue = this.__history[newIndex] as T[TKey];
-
-    this.__host[this.__propertyName] = prevValue;
+    this.__host[this.__propertyName] = prevValue.value;
     this.__historyIndex = newIndex === maxIndex ? -1 : newIndex;
-    this.lastChanged = new Date();
+    prevValue.date = new Date();
     this.__host.requestUpdate();
   }
 }

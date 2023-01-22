@@ -2,13 +2,13 @@ import '../util.js';
 
 import {html, PropertyDeclarations} from 'lit';
 import * as assert from 'uvu/assert';
-import {LastChangedController} from '../../main.js';
+import {PropertyHistoryController} from '../../main.js';
 import {TestElementBase} from '../util.js';
 
 /**
- * Test element for the last changed controller
+ * Test element for the property history controller
  */
-class LastChangedTestElement extends TestElementBase {
+class PropertyHistoryTestElement extends TestElementBase {
   public prop?: string;
 
   /** @inheritdoc */
@@ -19,17 +19,17 @@ class LastChangedTestElement extends TestElementBase {
   }
 }
 
-customElements.define('last-changed-test', LastChangedTestElement);
+customElements.define('property-history-test', PropertyHistoryTestElement);
 
-suite('LastChangedController', () => {
-  let element: LastChangedTestElement;
-  let controller: LastChangedController<LastChangedTestElement, 'prop'>;
+suite('PropertyHistoryController', () => {
+  let element: PropertyHistoryTestElement;
+  let controller: PropertyHistoryController<PropertyHistoryTestElement, 'prop'>;
 
   setup(async () => {
     element = document.createElement(
-      'last-changed-test'
-    ) as LastChangedTestElement;
-    controller = new LastChangedController(element, 'prop');
+      'property-history-test'
+    ) as PropertyHistoryTestElement;
+    controller = new PropertyHistoryController(element, 'prop');
     element.controllers.push(controller);
     element.template = () => html`Last: ${controller.lastChanged}`;
     document.body.appendChild(element);
@@ -40,9 +40,9 @@ suite('LastChangedController', () => {
     element.remove();
   });
 
-  test('initialises as undefined', () => {
-    assert.equal(controller.lastChanged, undefined);
-    assert.equal(element.shadowRoot!.textContent, 'Last: ');
+  test('initialises with current value', () => {
+    assert.is.not(controller.lastChanged, undefined);
+    assert.is.not(element.shadowRoot!.textContent, 'Last: ');
   });
 
   test('observes changes to property', async () => {

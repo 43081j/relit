@@ -1,6 +1,6 @@
-# lastChanged
+# propertyHistory
 
-`lastChanged` allows you to observe when a property of your element was last
+`propertyHistory` allows you to observe when a property of your element was last
 changed. It also allows you to undo/redo changes to the property.
 
 ## Usage
@@ -13,7 +13,7 @@ class MyElement extends LitElement {
   constructor() {
     super();
 
-    this._lastChangedCtrl = new LastChangedController(
+    this._propHistoryCtrl = new PropertyHistoryController(
       this,
       'someProp'
     );
@@ -21,7 +21,7 @@ class MyElement extends LitElement {
 
   render() {
     return html`
-      someProp was last changed at ${this._lastChangedCtrl.lastChanged}.
+      someProp was last changed at ${this._propHistoryCtrl.lastChanged}.
     `;
   }
 }
