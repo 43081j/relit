@@ -61,10 +61,10 @@ suite('PropertyHistoryController', () => {
 
     const prevValue = controller.lastChanged;
 
-    element.prop = 'bar';
+    element.prop = 'foo';
     await element.updateComplete;
 
-    assert.equal(controller.lastChanged, prevValue);
+    assert.is(controller.lastChanged, prevValue);
   });
 
   suite('undo', () => {
