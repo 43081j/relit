@@ -82,29 +82,31 @@ suite('HeadController', () => {
 
     suite('update', () => {
       test('renders title element', () => {
-        controller.update(html` <title>Foo</title> `);
+        controller.update(html`<title>Foo</title>`);
         const titles = document.head.querySelectorAll('title');
 
         assert.is(titles.length, 1);
-        assert.is(titles[0]!.textContent, 'Foo');
+        assert.is(titles[0]!.outerHTML, `<title>Foo</title>`);
         assert.is(document.title, 'Foo');
       });
 
       test('renders base element', () => {
-        controller.update(html` <base href="foo" /> `);
+        controller.update(html`<base href="foo">`);
         const nodes = document.head.querySelectorAll('base');
 
         assert.is(nodes.length, 1);
-        assert.is(nodes[0]!.getAttribute('href'), 'foo');
+        assert.is(nodes[0]!.outerHTML, `<base href="foo">`);
       });
 
       test('renders link element', () => {
-        controller.update(html` <link rel="stylesheet" href="foo.css" /> `);
+        controller.update(html`<link rel="stylesheet" href="foo.css">`);
         const nodes = document.head.querySelectorAll('link[href="foo.css"]');
 
         assert.is(nodes.length, 1);
-        assert.is(nodes[0]!.getAttribute('rel'), 'stylesheet');
-        assert.is(nodes[0]!.getAttribute('href'), 'foo.css');
+        assert.is(
+          nodes[0]!.outerHTML,
+          `<link rel="stylesheet" href="foo.css">`
+        );
       });
 
       test('renders script element', () => {
@@ -118,14 +120,16 @@ suite('HeadController', () => {
         assert.is(nodes.length, 1);
         assert.is(
           nodes[0]!.outerHTML,
-          `<script type="module" id="foo">const foo = 5;</script>`
+          `<script type="module" id="foo">
+            const foo = 5;
+          </script>`
         );
       });
 
       test('renders noscript element', () => {
         controller.update(html`
           <noscript id="foo">
-            <meta name="waffles" />
+            <meta name="waffles">
           </noscript>
         `);
         const nodes = document.head.querySelectorAll('noscript#foo');
@@ -153,13 +157,15 @@ suite('HeadController', () => {
         assert.is(
           nodes[0]!.outerHTML,
           `<style type="text/css" id="foo">
-            .foo { color: hotpink; }
+            .foo {
+              color: hotpink;
+            }
           </style>`
         );
       });
 
       test('renders meta element', () => {
-        controller.update(html` <meta name="waffles" id="foo" /> `);
+        controller.update(html`<meta name="waffles" id="foo">`);
         const nodes = document.head.querySelectorAll('meta#foo');
 
         assert.is(nodes.length, 1);
@@ -167,8 +173,8 @@ suite('HeadController', () => {
       });
 
       test('updates already rendered elements', () => {
-        controller.update(html` <meta name="waffles" id="foo" /> `);
-        controller.update(html` <meta name="wuffles" id="foo" /> `);
+        controller.update(html`<meta name="waffles" id="foo">`);
+        controller.update(html`<meta name="wuffles" id="foo">`);
 
         const nodes = document.head.querySelectorAll('meta#foo');
 
@@ -177,8 +183,8 @@ suite('HeadController', () => {
       });
 
       test('replaces title element if exists', () => {
-        controller.update(html` <title>Foo</title> `);
-        controller.update(html` <title>Bar</title> `);
+        controller.update(html`<title>Foo</title>`);
+        controller.update(html`<title>Bar</title>`);
         const titles = document.head.querySelectorAll('title');
 
         assert.is(titles.length, 1);
@@ -187,8 +193,8 @@ suite('HeadController', () => {
       });
 
       test('replaces base element if exists', () => {
-        controller.update(html` <base href="foo" /> `);
-        controller.update(html` <base href="bar" /> `);
+        controller.update(html`<base href="foo">`);
+        controller.update(html`<base href="bar">`);
         const nodes = document.head.querySelectorAll('base');
 
         assert.is(nodes.length, 1);
@@ -197,8 +203,8 @@ suite('HeadController', () => {
 
       test('renders multiple elements', () => {
         controller.update(html`
-          <meta name="waffles" id="foo" />
-          <meta name="wuffles" id="bar" />
+          <meta name="waffles" id="foo">
+          <meta name="wuffles" id="bar">
         `);
         const nodes = document.head.querySelectorAll('meta#foo, meta#bar');
 
@@ -211,8 +217,8 @@ suite('HeadController', () => {
     suite('removeRenderedElements', () => {
       test('removes all rendered elements', () => {
         controller.update(html`
-          <meta name="waffles" id="foo" />
-          <meta name="wuffles" id="bar" />
+          <meta name="waffles" id="foo">
+          <meta name="wuffles" id="bar">
         `);
 
         controller.removeRenderedElements();

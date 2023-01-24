@@ -20,37 +20,31 @@ export abstract class StorageController<T> implements ReactiveController {
    * @param {T|undefined} newValue Value to set
    */
   public set value(newValue: T | undefined) {
-    this.__value = newValue;
     this.__writeValueToStorage(newValue);
   }
 
   private __value: T | undefined;
   private __storage: Storage;
   private __key: string;
-  private __boundOnStorage: (ev: StorageEventLike) => void;
+  private __host: ReactiveControllerHost;
+  private __initialValue: T | undefined;
 
   /**
    * @param {ReactiveControllerHost} host Host to attach to
    * @param {Storage} storage Storage to observe
    * @param {string} key Key to observe in the storage object
-   * @param {T|undefined} defaultValue Default value
+   * @param {T=} defaultValue Default value
    */
   public constructor(
     host: ReactiveControllerHost,
     storage: Storage,
     key: string,
-    defaultValue: T | undefined
+    defaultValue?: T
   ) {
-    this.__boundOnStorage = this.__onStorage.bind(this);
+    this.__host = host;
     this.__storage = storage;
     this.__key = key;
-
-    const currentValue = this.__readValueFromStorage();
-
-    if (currentValue === undefined && defaultValue !== undefined) {
-      this.__value = defaultValue;
-      this.__writeValueToStorage(this.__value);
-    }
+    this.__initialValue = defaultValue;
 
     host.addController(this);
   }
@@ -60,7 +54,7 @@ export abstract class StorageController<T> implements ReactiveController {
    * @param {StorageEvent} ev Event fired
    * @return {void}
    */
-  private __onStorage(ev: StorageEventLike): void {
+  private __onStorage = (ev: StorageEventLike): void => {
     const detail =
       ev.type === 'storage'
         ? (ev as StorageEvent)
@@ -69,8 +63,9 @@ export abstract class StorageController<T> implements ReactiveController {
     if (detail.storageArea === this.__storage && detail.key === this.__key) {
       const currentValue = this.__readValueFromStorage();
       this.__value = currentValue;
+      this.__host.requestUpdate();
     }
-  }
+  };
 
   /**
    * Updates the value in the given storage area
@@ -110,14 +105,25 @@ export abstract class StorageController<T> implements ReactiveController {
 
   /** @inheritdoc */
   public hostConnected(): void {
-    window.addEventListener('storage', this.__boundOnStorage);
-    window.addEventListener('__litkit-storage', this.__boundOnStorage);
+    window.addEventListener('storage', this.__onStorage);
+    window.addEventListener('__litkit-storage', this.__onStorage);
+
+    if (this.__initialValue !== undefined) {
+      const defaultValue = this.__initialValue;
+      const currentValue = this.__readValueFromStorage();
+
+      if (currentValue === undefined && defaultValue !== undefined) {
+        this.__writeValueToStorage(defaultValue);
+      }
+
+      this.__initialValue = undefined;
+    }
   }
 
   /** @inheritdoc */
   public hostDisconnected(): void {
-    window.removeEventListener('storage', this.__boundOnStorage);
-    window.removeEventListener('__litkit-storage', this.__boundOnStorage);
+    window.removeEventListener('storage', this.__onStorage);
+    window.removeEventListener('__litkit-storage', this.__onStorage);
   }
 }
 

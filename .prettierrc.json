@@ -6,5 +6,6 @@
   "tabWidth": 2,
   "trailingComma": "none",
   "useTabs": false,
-  "arrowParens": "always"
+  "arrowParens": "always",
+  "embeddedLanguageFormatting": "off"
 }
