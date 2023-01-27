@@ -4,7 +4,7 @@ import type {ReactiveController, ReactiveControllerHost} from 'lit';
  * Tracks the document's current visibility
  */
 export class DocumentVisibilityController implements ReactiveController {
-  public visibility: Document['visibilityState'];
+  public visible: boolean = false;
 
   private __host: ReactiveControllerHost;
   private __boundOnVisibilityChanged: () => void;
@@ -16,7 +16,7 @@ export class DocumentVisibilityController implements ReactiveController {
     this.__host = host;
     this.__boundOnVisibilityChanged = this.__onVisibilityChanged.bind(this);
 
-    this.visibility = window.document.visibilityState;
+    this.visible = window.document.visibilityState === 'visible';
 
     host.addController(this as ReactiveController);
   }
@@ -26,7 +26,7 @@ export class DocumentVisibilityController implements ReactiveController {
    * @return {void}
    */
   private __onVisibilityChanged(): void {
-    this.visibility = window.document.visibilityState;
+    this.visible = window.document.visibilityState === 'visible';
     this.__host.requestUpdate();
   }
 

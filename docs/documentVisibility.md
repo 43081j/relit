@@ -13,19 +13,17 @@ class MyElement extends LitElement {
   }
 
   render() {
+    const visibility = this._elementVisibilityCtrl.visible ? 'visible' : 'hidden';
+
     return html`
-      Document is currently ${this._documentVisibilityCtrl.visibility}.
+      Document is currently ${visibility}.
     `;
   }
 }
 ```
 
-The `visibility` property will be one of the following string values:
-
-- `hidden`
-- `visible`
-
-As defined [here](https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilityState).
+The `visible` property will be `true` or `false` depending on if the document
+is currently visible or not.
 
 ## Options
 

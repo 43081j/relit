@@ -13,7 +13,7 @@ suite('DocumentVisibilityController', () => {
     element = document.createElement('test-element');
     controller = new DocumentVisibilityController(element);
     element.controllers.push(controller);
-    element.template = () => html`${controller.visibility}`;
+    element.template = () => html`${controller.visible}`;
     document.body.appendChild(element);
   });
 
@@ -22,8 +22,8 @@ suite('DocumentVisibilityController', () => {
   });
 
   test('initialises to current visibility', () => {
-    assert.equal(controller.visibility, document.visibilityState);
-    assert.equal(element.shadowRoot!.textContent, 'visible');
+    assert.equal(controller.visible, true);
+    assert.equal(element.shadowRoot!.textContent, 'true');
   });
 
   test('updates visibility on visibility change');
