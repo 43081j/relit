@@ -1,6 +1,6 @@
 {
-  "name": "lit-toolkit",
-  "version": "0.0.1",
+  "name": "relit",
+  "version": "2.0.1",
   "description": "A collection of useful utilities for lit components",
   "main": "lib/main.js",
   "type": "module",
@@ -19,14 +19,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/43081j/lit-toolkit.git"
+    "url": "git+https://github.com/43081j/relit.git"
   },
   "author": "James Garbutt (https://github.com/43081j)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/43081j/lit-toolkit/issues"
+    "url": "https://github.com/43081j/relit/issues"
   },
-  "homepage": "https://github.com/43081j/lit-toolkit#readme",
+  "homepage": "https://github.com/43081j/relit#readme",
   "devDependencies": {
     "@types/mocha": "^10.0.1",
     "@typescript-eslint/eslint-plugin": "^5.47.1",
