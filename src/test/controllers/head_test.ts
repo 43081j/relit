@@ -46,9 +46,9 @@ suite('HeadController', () => {
       });
     });
 
-    suite('updateBodyTag', () => {
-      test('updates attributes on tag', () => {
-        controller.updateBodyTag({
+    suite('updateBodyAttr', () => {
+      test('updates attributes on body tag', () => {
+        controller.updateBodyAttr({
           'data-foo': 'bar'
         });
         assert.is(document.body.getAttribute('data-foo'), 'bar');
@@ -56,16 +56,16 @@ suite('HeadController', () => {
 
       test('removes null attributes from tag', () => {
         document.body.setAttribute('data-foo', 'bar');
-        controller.updateBodyTag({
+        controller.updateBodyAttr({
           'data-foo': null
         });
         assert.is(document.body.hasAttribute('data-foo'), false);
       });
     });
 
-    suite('updateHtmlTag', () => {
+    suite('updateHtmlAttr', () => {
       test('updates attributes on tag', () => {
-        controller.updateHtmlTag({
+        controller.updateHtmlAttr({
           'data-foo': 'bar'
         });
         assert.is(document.documentElement.getAttribute('data-foo'), 'bar');
@@ -73,7 +73,7 @@ suite('HeadController', () => {
 
       test('removes null attributes from tag', () => {
         document.documentElement.setAttribute('data-foo', 'bar');
-        controller.updateHtmlTag({
+        controller.updateHtmlAttr({
           'data-foo': null
         });
         assert.is(document.documentElement.hasAttribute('data-foo'), false);

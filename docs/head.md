@@ -102,7 +102,7 @@ Sets the page title:
 this._headCtrl.setTitle('Page Title');
 ```
 
-### `updateBodyTag`
+### `updateBodyAttr`
 
 Updates the `<body>` tag of the document with a specified set of attributes.
 
@@ -111,14 +111,14 @@ You may pass `null` as an attribute value to forcefully remove it.
 For example:
 
 ```ts
-this._headCtrl.updateBodyTag({
+this._headCtrl.updateBodyAttr({
   'data-foo': 'foo',
   'data-bar': 'bar'
 });
 
 // <body data-foo="foo" data-bar="bar">
 
-this._headCtrl.updateBodyTag({
+this._headCtrl.updateBodyAttr({
   'data-foo': 'foo',
   'data-bar': null
 });
@@ -130,7 +130,7 @@ this._headCtrl.updateBodyTag({
 method multiple times with different attributes, the tag will accumulate all of
 them.
 
-### `updateHtmlTag`
+### `updateHtmlAttr`
 
 Updates the `<html>` tag of the document with a specified set of attributes.
 
@@ -140,14 +140,14 @@ You may pass `null` as an attribute value to forcefully remove it.
 For example:
 
 ```ts
-this._headCtrl.updateHtmlTag({
+this._headCtrl.updateHtmlAttr({
   'data-foo': 'foo',
   'data-bar': 'bar'
 });
 
 // <html data-foo="foo" data-bar="bar">
 
-this._headCtrl.updateHtmlTag({
+this._headCtrl.updateHtmlAttr({
   'data-foo': 'foo',
   'data-bar': null
 });

@@ -112,7 +112,7 @@ export class HeadController implements ReactiveController {
    * @param {Record<string, string>} attribs Attributes to apply
    * @return {void}
    */
-  public updateBodyTag(attribs: Record<string, string | null>): void {
+  public updateBodyAttr(attribs: Record<string, string | null>): void {
     const node = this.__document.body;
     this.__applyAttributesFromRecord(node, attribs);
   }
@@ -122,7 +122,7 @@ export class HeadController implements ReactiveController {
    * @param {Record<string, string>} attribs Attributes to apply
    * @return {void}
    */
-  public updateHtmlTag(attribs: Record<string, string | null>): void {
+  public updateHtmlAttr(attribs: Record<string, string | null>): void {
     const node = this.__document.documentElement;
     this.__applyAttributesFromRecord(node, attribs);
   }
