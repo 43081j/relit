@@ -1,4 +1,4 @@
-# relit
+# relit - list of utilities
 
 The following is the full list of available utilities:
 

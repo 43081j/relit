@@ -1,7 +1,9 @@
 # relit
 
-relit is a collection of utilities to be used with the [lit](https://lit.dev)
-library.
+relit is a collection of utilities to provide various features as reactive state
+to [lit](https://lit.dev) components.
+
+DOM state, web APIs, property history and much more.
 
 ## Install
 
