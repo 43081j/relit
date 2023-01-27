@@ -1,6 +1,20 @@
-# X
+# relit
 
-X is a collection of useful tools for observing various parts of the browser's
-state and the DOM within [lit](https://lit.dev).
+relit is a collection of utilities to be used with the [lit](https://lit.dev)
+library.
 
-For more information, read the [docs](./docs/index.md).
+## Install
+
+To install `relit`, simply add it as a dependency to your lit project:
+
+```sh
+npm i -S relit
+```
+
+## Usage
+
+For usage, see the [docs](./docs/index.md) of each available utility.
+
+## License
+
+MIT
