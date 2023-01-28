@@ -1,7 +1,7 @@
 # relit
 
-relit is a collection of utilities to provide various features as reactive state
-to [lit](https://lit.dev) components.
+relit (reactive lit) is a collection of utilities to provide various features
+as reactive state to [lit](https://lit.dev) components.
 
 DOM state, web APIs, property history and much more.
 
