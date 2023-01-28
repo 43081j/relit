@@ -2,18 +2,6 @@
 
 `markdown` allows you to process markdown into HTML and render the result.
 
-**IMPORTANT:**
-
-In order to use `markdown`, you must install
-[marked](https://github.com/markedjs/marked) as a dependency in your project:
-
-```sh
-npm i -S marked
-```
-
-Additionally, if you use TypeScript, you should install the `@types/marked`
-package so you can get the correct types for `options.markedOptions`.
-
 ## Usage
 
 ```ts
