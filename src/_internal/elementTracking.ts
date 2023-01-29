@@ -26,7 +26,7 @@ export class ElementTrackingController implements ReactiveController {
    * controller
    * @param {Ref=} ref Ref to observe rather than the host element
    */
-  public constructor(host: ReactiveControllerHost & Element, ref?: Ref) {
+  public constructor(host: ReactiveControllerHost & Element, ref?: Ref | null) {
     this._host = host;
     if (ref) {
       this.__ref = ref;
