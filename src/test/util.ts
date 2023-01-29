@@ -1,5 +1,9 @@
 import {LitElement, html, css} from 'lit';
-import type {ReactiveController, TemplateResult} from 'lit';
+import type {
+  ReactiveController,
+  TemplateResult,
+  PropertyDeclarations
+} from 'lit';
 
 type TestTemplateFn = () => TemplateResult;
 
@@ -12,6 +16,14 @@ export abstract class TestElementBase extends LitElement {
       display: block;
     }
   `;
+
+  /** @inheritdoc */
+  public static override get properties(): PropertyDeclarations {
+    return {
+      template: {type: Object}
+    };
+  }
+
   public controllers: ReactiveController[] = [];
   public template?: TestTemplateFn;
 

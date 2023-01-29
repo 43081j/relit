@@ -8,6 +8,7 @@ The following is the full list of available utilities:
 - [elementVisibility](./elementVisibility.md) - element visibility
 - [head](./head.md) - `<head>` tag management
 - [itemSelection](./itemSelection.md) - manages selection within an array of items
+- [keyBinding](./keyBinding.md) - key bindings (shortcuts) manager
 - [localStorage](./localStorage.md) - items in [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
 - [markdown](./markdown.md) - markdown processing via [marked](https://github.com/markedjs/marked)
 - [permissions](./permissions.md) - track the state of a browser [permission](https://developer.mozilla.org/en-US/docs/Web/API/Permissions/query)
