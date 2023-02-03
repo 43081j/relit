@@ -1,6 +1,6 @@
 {
   "name": "relit",
-  "version": "2.0.2",
+  "version": "2.2.0",
   "description": "A collection of useful utilities for lit components",
   "main": "lib/main.js",
   "type": "module",
