@@ -29,6 +29,22 @@ The parameters (`bindInput(host, property)`) are as follows:
 - `host` - any object which has the specified `property`
 - `property` - the name of the property on `host` to bind
 
+### By attribute/property
+
+You may also use this directive with an attribute or property binding:
+
+```ts
+    return html`
+      <label>
+        Name:
+        <input type="text" .value=${bindInput(this, 'name')}>
+      </label>
+    `;
+```
+
+This may help with SSR, and will work the same way as the element binding
+usage.
+
 ## Supported elements
 
 The following elements are supported by this directive:
