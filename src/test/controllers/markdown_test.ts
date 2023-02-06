@@ -1,9 +1,10 @@
 import '../util.js';
 
 import {html} from 'lit';
+import * as hanbi from 'hanbi';
 import type {PropertyDeclarations} from 'lit';
 import * as assert from 'uvu/assert';
-import {MarkdownController} from '../../main.js';
+import {MarkdownController, MarkdownOptions} from '../../main.js';
 import {TestElementBase} from '../util.js';
 
 /**
@@ -28,6 +29,7 @@ suite('MarkdownController', () => {
 
   teardown(() => {
     element.remove();
+    hanbi.restore();
   });
 
   suite('default', () => {
@@ -68,6 +70,46 @@ suite('MarkdownController', () => {
         assert.is(newP, p);
         assert.is.not(controller.value, undefined);
         assert.match(element.shadowRoot!.innerHTML, '<p>foo</p>');
+      });
+    });
+
+    suite('options', () => {
+      setup(async () => {
+        await controller.setValue('# foo');
+        await element.updateComplete;
+      });
+
+      test('recomputes value if options changed', async () => {
+        assert.match(element.shadowRoot!.innerHTML, '<h1 id="foo">foo</h1>');
+
+        controller.options = {
+          markedOptions: {
+            headerIds: false
+          }
+        };
+
+        await element.updateComplete;
+
+        assert.match(element.shadowRoot!.innerHTML, '<h1>foo</h1>');
+      });
+
+      test('does not recompute if options same', async () => {
+        const spy = hanbi.spy();
+        const opts: MarkdownOptions<'prop'> = {
+          markedOptions: {
+            walkTokens: spy.handler
+          }
+        };
+
+        controller.options = opts;
+        await element.updateComplete;
+
+        assert.is(spy.callCount, 2);
+
+        controller.options = opts;
+        await element.updateComplete;
+
+        assert.is(spy.callCount, 2);
       });
     });
   });
