@@ -22,8 +22,30 @@ export class MarkdownController<
 {
   public value?: TemplateResult;
 
+  /**
+   * Gets the controller options
+   * @return {MarkdownOptions<TKey>|undefined}
+   */
+  public get options(): MarkdownOptions<TKey> | undefined {
+    return this.__options;
+  }
+
+  /**
+   * Sets the controller options
+   * @param {MarkdownOptions<TKey>} opts Options to set
+   */
+  public set options(opts: MarkdownOptions<TKey> | undefined) {
+    const oldOpts = this.__options;
+
+    this.__options = opts;
+
+    if (oldOpts !== opts && this.__previousValue !== undefined) {
+      this.__processMarkdownFromValue(this.__previousValue);
+    }
+  }
+
   private __host: T;
-  private __options?: MarkdownOptions<TKey>;
+  private __options: MarkdownOptions<TKey> | undefined = undefined;
   private __previousValue?: string;
 
   /**
@@ -32,13 +54,10 @@ export class MarkdownController<
    */
   public constructor(host: T, options?: MarkdownOptions<TKey>) {
     this.__host = host;
+    this.__options = options;
 
-    if (options) {
-      this.__options = options;
-
-      if (options.property) {
-        this.__setValueFromProp(options.property);
-      }
+    if (options?.property) {
+      this.__setValueFromProp(options.property);
     }
 
     host.addController(this);
@@ -78,6 +97,15 @@ export class MarkdownController<
 
     this.__previousValue = markdown;
 
+    this.__processMarkdownFromValue(markdown);
+  }
+
+  /**
+   * Processes a given markdown string and sets the value of the controller
+   * @param {string} markdown Source to process
+   * @return {void}
+   */
+  private __processMarkdownFromValue(markdown: string): void {
     const parsed = marked(markdown, {
       ...this.__options?.markedOptions
     });
