@@ -43,7 +43,8 @@ suite('bindInput directive', () => {
     } catch (err) {
       assert.is(
         (err as Error).message,
-        'The `bindInput` directive must be used in an element binding'
+        'The `bindInput` directive must be used in an element or ' +
+          'attribute binding'
       );
     }
   });
@@ -98,6 +99,62 @@ suite('bindInput directive', () => {
     assert.is(element.prop, 'xyz');
   });
 
+  suite('<input> by property', () => {
+    setup(async () => {
+      element.template = () => html`
+        <input .value=${bindInput(element, 'prop')}>
+      `;
+      await element.updateComplete;
+    });
+
+    test('propagates value downwards', async () => {
+      element.prop = 'xyz';
+      await element.updateComplete;
+
+      const inputNode = element.shadowRoot!.querySelector('input')!;
+
+      assert.is(inputNode.value, 'xyz');
+    });
+
+    test('propagates value upwards', async () => {
+      const inputNode = element.shadowRoot!.querySelector('input')!;
+
+      inputNode.value = 'xyz';
+      inputNode.dispatchEvent(new Event('input'));
+      await element.updateComplete;
+
+      assert.is(element.prop, 'xyz');
+    });
+  });
+
+  suite('<input> by attribute', () => {
+    setup(async () => {
+      element.template = () => html`
+        <input value=${bindInput(element, 'prop')}>
+      `;
+      await element.updateComplete;
+    });
+
+    test('propagates value downwards', async () => {
+      element.prop = 'xyz';
+      await element.updateComplete;
+
+      const inputNode = element.shadowRoot!.querySelector('input')!;
+
+      assert.is(inputNode.value, 'xyz');
+    });
+
+    test('propagates value upwards', async () => {
+      const inputNode = element.shadowRoot!.querySelector('input')!;
+
+      inputNode.value = 'xyz';
+      inputNode.dispatchEvent(new Event('input'));
+      await element.updateComplete;
+
+      assert.is(element.prop, 'xyz');
+    });
+  });
+
   suite('<input>', () => {
     setup(async () => {
       element.template = () => html`
@@ -123,6 +180,17 @@ suite('bindInput directive', () => {
       await element.updateComplete;
 
       assert.is(element.prop, 'xyz');
+    });
+
+    test('sets empty string on undefined value', async () => {
+      element.prop = 'xyz';
+      await element.updateComplete;
+      element.prop = undefined;
+      await element.updateComplete;
+
+      const inputNode = element.shadowRoot!.querySelector('input')!;
+
+      assert.is(inputNode.value, '');
     });
   });
 
@@ -244,6 +312,17 @@ suite('bindInput directive', () => {
       await element.updateComplete;
 
       assert.is(element.prop, 'xyz');
+    });
+
+    test('sets empty string on undefined value', async () => {
+      element.prop = 'xyz';
+      await element.updateComplete;
+      element.prop = undefined;
+      await element.updateComplete;
+
+      const node = element.shadowRoot!.querySelector('textarea')!;
+
+      assert.is(node.value, '');
     });
   });
 });

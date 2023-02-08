@@ -56,20 +56,33 @@ class BindInputDirective extends AsyncDirective {
   private __prop?: PropertyLike;
   private __host: unknown | undefined = undefined;
   private __lastValue: unknown = undefined;
+  private __isAttribute: boolean;
 
   /** @inheritdoc */
   public constructor(partInfo: PartInfo) {
     super(partInfo);
 
-    if (partInfo.type !== PartType.ELEMENT) {
+    if (
+      partInfo.type !== PartType.ELEMENT &&
+      partInfo.type !== PartType.ATTRIBUTE &&
+      partInfo.type !== PartType.PROPERTY
+    ) {
       throw new Error(
-        'The `bindInput` directive must be used in an element binding'
+        'The `bindInput` directive must be used in an element or ' +
+          'attribute binding'
       );
     }
+
+    this.__isAttribute =
+      partInfo.type === PartType.ATTRIBUTE ||
+      partInfo.type === PartType.PROPERTY;
   }
 
   /** @inheritdoc */
-  public render(_host: unknown, _prop: PropertyLike): typeof nothing {
+  public render(host: unknown, prop: PropertyLike): unknown {
+    if (this.__isAttribute) {
+      return this.__computeValueFromHost(host, prop);
+    }
     return nothing;
   }
 
@@ -77,7 +90,7 @@ class BindInputDirective extends AsyncDirective {
   public override update(
     part: ElementPart,
     [host, prop]: DirectiveParameters<this>
-  ): void {
+  ): unknown {
     if (part.element !== this.__element) {
       this.__setElement(part.element);
     }
@@ -90,9 +103,25 @@ class BindInputDirective extends AsyncDirective {
       this.__host = host;
     }
 
-    if (host) {
+    if (host && !this.__isAttribute) {
       this.__updateValueFromHost(host);
     }
+
+    return this.render(host, prop);
+  }
+
+  /**
+   * Gets the value of the property from the host
+   * @param {unknown} host Host to retrieve value from
+   * @param {string|symbol|number} prop Property to retrieve
+   * @return {unknown}
+   */
+  private __computeValueFromHost(host: unknown, prop: PropertyLike): unknown {
+    if (typeof host !== 'object' || host === null || !(prop in host)) {
+      return undefined;
+    }
+
+    return (host as Record<PropertyLike, unknown>)[prop];
   }
 
   /**
@@ -102,17 +131,11 @@ class BindInputDirective extends AsyncDirective {
    * @return {void}
    */
   private __updateValueFromHost(host: unknown): void {
-    if (
-      !this.__prop ||
-      !host ||
-      typeof host !== 'object' ||
-      !(this.__prop in host) ||
-      !this.__element
-    ) {
+    if (!this.__prop || !this.__element) {
       return;
     }
 
-    const value = (host as Record<PropertyLike, unknown>)[this.__prop];
+    const value = this.__computeValueFromHost(host, this.__prop);
     const element = this.__element;
 
     if (value === this.__lastValue) {
@@ -125,7 +148,7 @@ class BindInputDirective extends AsyncDirective {
       if (element.type === 'checkbox') {
         element.checked = value === true;
       } else {
-        element.value = String(value);
+        element.value = String(value ?? '');
       }
     } else if (isSelectElement(element)) {
       if (element.multiple) {
@@ -137,10 +160,10 @@ class BindInputDirective extends AsyncDirective {
           }
         }
       } else {
-        element.value = String(value);
+        element.value = String(value ?? '');
       }
     } else if (isTextAreaElement(element)) {
-      element.value = String(value);
+      element.value = String(value ?? '');
     } else if ('value' in element) {
       element.value = value;
     }
