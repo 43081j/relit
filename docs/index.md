@@ -15,4 +15,5 @@ The following is the full list of available utilities:
 - [permissions](./permissions.md) - track the state of a browser [permission](https://developer.mozilla.org/en-US/docs/Web/API/Permissions/query)
 - [propertyHistory](./propertyHistory.md) - track the history of a property with undo/redo
 - [sessionStorage](./sessionStorage.md) - items in [sessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage)
+- [slot](./slot.md) - track slotted elements
 - [windowScroll](./windowScroll.md) - track the window scroll offset

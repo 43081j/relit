@@ -7,7 +7,7 @@ import type {Ref} from 'lit/directives/ref.js';
 import {ElementSizeController} from '../../main.js';
 import type {TestElement} from '../util.js';
 
-suite('DocumentVisibilityController', () => {
+suite('ElementSizeController', () => {
   let element: TestElement;
   let controller: ElementSizeController;
 

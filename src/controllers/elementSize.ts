@@ -81,8 +81,8 @@ export class ElementSizeController extends ElementTrackingController {
   }
 
   /** @inheritdoc */
-  protected override _onElementChanged(): void {
-    super._onElementChanged();
+  protected override _onElementChanged(prevElement: Element | undefined): void {
+    super._onElementChanged(prevElement);
 
     this.__observer.disconnect();
 

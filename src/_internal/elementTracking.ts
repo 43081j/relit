@@ -7,7 +7,7 @@ import type {Ref} from 'lit/directives/ref.js';
  */
 export class ElementTrackingController implements ReactiveController {
   protected _host: ReactiveControllerHost & Element;
-  private __ref?: Ref;
+  protected _ref?: Ref;
   private __currentElement: Element | undefined = undefined;
 
   /**
@@ -15,8 +15,8 @@ export class ElementTrackingController implements ReactiveController {
    * @return {Element|undefined}
    */
   protected get _element(): Element | undefined {
-    if (this.__ref) {
-      return this.__ref.value;
+    if (this._ref) {
+      return this._ref.value;
     }
     return this._host;
   }
@@ -29,24 +29,27 @@ export class ElementTrackingController implements ReactiveController {
   public constructor(host: ReactiveControllerHost & Element, ref?: Ref | null) {
     this._host = host;
     if (ref) {
-      this.__ref = ref;
+      this._ref = ref;
     }
   }
 
   /** @inheritdoc */
   public hostUpdated(): void {
     const element = this._element;
-    if (element !== this.__currentElement) {
+    const prevElement = this.__currentElement;
+    if (element !== prevElement) {
       this.__currentElement = element;
-      this._onElementChanged();
+      this._onElementChanged(prevElement);
     }
   }
 
   /**
    * Fired when the current observed element changed
+   * @param {Element|undefined} _previousElement Previous element before it
+   * changed
    * @return {void}
    */
-  protected _onElementChanged(): void {
+  protected _onElementChanged(_previousElement: Element | undefined): void {
     return;
   }
 }

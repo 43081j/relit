@@ -10,5 +10,6 @@ export * from './controllers/markdown.js';
 export * from './controllers/permissions.js';
 export * from './controllers/propertyHistory.js';
 export * from './controllers/sessionStorage.js';
+export * from './controllers/slot.js';
 export * from './controllers/windowScroll.js';
 export * from './directives/bindInput.js';
