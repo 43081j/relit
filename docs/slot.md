@@ -15,15 +15,14 @@ class MyElement extends LitElement {
 
     this._slotCtrl = new SlotController(this);
 
-    this._slotCtrl.addListener('*', (node) => {
-      // I am called every time a new node enters the slot
+    this._slotCtrl.addListener('[default]', '*', (node) => {
+      // I am called every time a new node enters the default slot
     });
   }
 
   render() {
     return html`
-      <slot ${ref(this.slotCtrl.ref)}>
-      </slot>
+      <slot></slot>
     `;
   }
 }
@@ -31,35 +30,67 @@ class MyElement extends LitElement {
 
 ## Options
 
-When constructing the slot controller, a [`ref`](https://lit.dev/docs/templates/directives/#ref)
-is automatically created.
-
-You may override this by passing your own ref:
-
-```ts
-const myRef = createRef();
-const ctrl = new SlotController(host, myRef);
-```
+N/A
 
 ## Methods
 
-### `addListener(selector, callback)`
+### `addListener(slot, selector, callback)`
 
 This adds a listener to the controller which will be called any time an element
 is slotted into the referenced slot and matches the `selector`.
 
+- `slot` may be the name of a slot, or a `Ref` of a slot element
+- `selector` must be a CSS selector
+- `callback` is a function called when matching elements are slotted
+
+In both `slot` and `selector`, you may use `*` to specify "all slots" or
+"all elements".
+
+You may also use `[default]` to reference the default slot.
+
 For example:
 
 ```ts
-ctrl.addListener('*', (node) => {
-  // I am called when any element is slotted
+ctrl.addListener('*', '*', (node) => {
+  // I am called when any element is slotted into any slot
+});
+
+ctrl.addListener('[default]', '*', (node) => {
+  // I am called when any element is slotted into the default slot
+});
+
+ctrl.addListener('myslot', '*', (node) => {
+  // I am called when any element is slotted into a slot with the name "myslot"
+});
+
+ctrl.addListener('[default]', 'span', (node) => {
+  // I am called when a <span> is slotted into the default slot
 });
 ```
 
-The selector is any valid CSS selector:
+### `has(slot[, selector, options])`
+
+This can be used to determine if the current host element has slotted elements
+in a given slot.
+
+A selector may also be specified to narrow the selection.
+
+For example:
 
 ```ts
-ctrl.addListener('div', (node) => {
-  // I am called when a `<div>` is slotted
-});
+// true if the default slot has elements
+ctrl.has('[default]');
+
+// true if any slots have slotted elements
+ctrl.has('*');
+
+// true if the <slot> named "foo" has slotted elements
+ctrl.has('foo');
+
+// true if a `<span>` has been slotted into the default slot
+ctrl.has('[default]', 'span');
 ```
+
+You may also specify `options` to further customise the behaviour:
+
+- `options.flatten` - see [here](https://developer.mozilla.org/en-US/docs/Web/API/HTMLSlotElement/assignedElements#flatten)
