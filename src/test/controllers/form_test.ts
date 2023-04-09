@@ -183,7 +183,7 @@ suite('FormController', () => {
       await element.updateComplete;
     });
 
-    test('field validator with error populates errors', async () => {
+    test('field validator can return error', async () => {
       let lastVal: string | undefined;
 
       controller.addValidator('email', (val) => {
@@ -201,6 +201,21 @@ suite('FormController', () => {
       assert.equal(controller.value, {});
       assert.is(controller.errors.size, 1);
       assert.is(controller.errors.get('email'), 'some error');
+    });
+
+    test('field validator can null', async () => {
+      controller.addValidator('email', () => {
+        return null;
+      });
+
+      const input =
+        element.shadowRoot!.querySelector<HTMLInputElement>('input')!;
+      input.value = 'foo';
+      input.dispatchEvent(new Event('change'));
+      await element.updateComplete;
+
+      assert.equal(controller.value, {email: 'foo'});
+      assert.is(controller.errors.size, 0);
     });
 
     test('form validator can return single error', async () => {

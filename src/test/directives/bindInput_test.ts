@@ -227,7 +227,7 @@ suite('bindInput directive', () => {
 
     setup(async () => {
       valid = true;
-      const validate = () => valid;
+      const validate = (): boolean => valid;
       element.template = () => html`
         <input ${bindInput(element, 'prop', {validate})}>
       `;
