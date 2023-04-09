@@ -161,4 +161,115 @@ suite('FormController', () => {
       assert.is(controller.value, value);
     });
   });
+
+  suite('addValidator', () => {
+    let value: {email?: string};
+    let controller: FormController<typeof value>;
+
+    setup(async () => {
+      value = {};
+
+      const fixtureResult = await fixture<typeof value>(value);
+      element = fixtureResult.element;
+      controller = fixtureResult.controller;
+
+      element.template = () => html`
+        <form ${controller.attach()}>
+          <input
+            type="string"
+            ${controller.bind('email')}>
+        </form>
+      `;
+      await element.updateComplete;
+    });
+
+    test('field validator with error populates errors', async () => {
+      let lastVal: string | undefined;
+
+      controller.addValidator('email', (val) => {
+        lastVal = val;
+        return 'some error';
+      });
+
+      const input =
+        element.shadowRoot!.querySelector<HTMLInputElement>('input')!;
+      input.value = 'foo';
+      input.dispatchEvent(new Event('change'));
+      await element.updateComplete;
+
+      assert.is(lastVal, 'foo');
+      assert.equal(controller.value, {});
+      assert.is(controller.errors.size, 1);
+      assert.is(controller.errors.get('email'), 'some error');
+    });
+
+    test('form validator can return single error', async () => {
+      let lastVal;
+
+      controller.addValidator((val) => {
+        lastVal = val;
+        return {
+          prop: 'email',
+          message: 'some error'
+        };
+      });
+
+      const input =
+        element.shadowRoot!.querySelector<HTMLInputElement>('input')!;
+      input.value = 'foo';
+      input.dispatchEvent(new Event('change'));
+      await element.updateComplete;
+
+      assert.equal(lastVal, {});
+      assert.equal(controller.value, {});
+      assert.is(controller.errors.size, 1);
+      assert.is(controller.errors.get('email'), 'some error');
+    });
+
+    test('form validator can return multiple errors', async () => {
+      controller.addValidator(() => {
+        return [
+          {
+            prop: 'email',
+            message: 'some error'
+          }
+        ];
+      });
+
+      const input =
+        element.shadowRoot!.querySelector<HTMLInputElement>('input')!;
+      input.value = 'foo';
+      input.dispatchEvent(new Event('change'));
+      await element.updateComplete;
+
+      assert.equal(controller.value, {});
+      assert.is(controller.errors.size, 1);
+      assert.is(controller.errors.get('email'), 'some error');
+    });
+
+    test('multiples errors for one field results in last error', async () => {
+      controller.addValidator(() => {
+        return [
+          {
+            prop: 'email',
+            message: 'error 0'
+          },
+          {
+            prop: 'email',
+            message: 'error 1'
+          }
+        ];
+      });
+
+      const input =
+        element.shadowRoot!.querySelector<HTMLInputElement>('input')!;
+      input.value = 'foo';
+      input.dispatchEvent(new Event('change'));
+      await element.updateComplete;
+
+      assert.equal(controller.value, {});
+      assert.is(controller.errors.size, 1);
+      assert.is(controller.errors.get('email'), 'error 1');
+    });
+  });
 });

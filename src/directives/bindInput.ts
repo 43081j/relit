@@ -9,10 +9,9 @@ import {PartType} from 'lit/directive.js';
 import delve from 'dlv';
 import {dset} from 'dset';
 
-type PropertyLike = string | symbol | number;
-
 export interface BindInputOptions {
-  host: ReactiveControllerHost;
+  host?: ReactiveControllerHost;
+  validate?: (val: unknown, prop: PropertyKey) => boolean;
 }
 
 /**
@@ -57,7 +56,7 @@ function isTextAreaElement(target: EventTarget): target is HTMLTextAreaElement {
  */
 export class BindInputDirective extends AsyncDirective {
   private __element?: Element;
-  private __prop?: PropertyLike;
+  private __prop?: PropertyKey;
   private __host: unknown | undefined = undefined;
   private __lastValue: unknown = undefined;
   private __isAttribute: boolean;
@@ -86,7 +85,7 @@ export class BindInputDirective extends AsyncDirective {
   /** @inheritdoc */
   public render(
     host: unknown,
-    prop: PropertyLike,
+    prop: PropertyKey,
     _options?: BindInputOptions
   ): unknown {
     if (this.__isAttribute) {
@@ -126,10 +125,10 @@ export class BindInputDirective extends AsyncDirective {
   /**
    * Gets the value of the property from the host
    * @param {unknown} host Host to retrieve value from
-   * @param {string|symbol|number} prop Property to retrieve
+   * @param {PropertyKey} prop Property to retrieve
    * @return {unknown}
    */
-  private __computeValueFromHost(host: unknown, prop: PropertyLike): unknown {
+  private __computeValueFromHost(host: unknown, prop: PropertyKey): unknown {
     if (typeof prop === 'string') {
       return delve(host, prop);
     }
@@ -138,7 +137,7 @@ export class BindInputDirective extends AsyncDirective {
       return undefined;
     }
 
-    return (host as Record<PropertyLike, unknown>)[prop];
+    return (host as Record<PropertyKey, unknown>)[prop];
   }
 
   /**
@@ -279,12 +278,19 @@ export class BindInputDirective extends AsyncDirective {
 
     const value = this.__getValueFromElement(element);
 
+    if (
+      this.__options?.validate &&
+      !this.__options.validate(value, this.__prop)
+    ) {
+      return;
+    }
+
     this.__lastValue = value;
 
     if (typeof this.__prop === 'string') {
       dset(this.__host, this.__prop, value);
     } else {
-      (this.__host as Record<PropertyLike, unknown>)[this.__prop] = value;
+      (this.__host as Record<PropertyKey, unknown>)[this.__prop] = value;
     }
 
     if (this.__options?.host) {

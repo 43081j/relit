@@ -105,6 +105,20 @@ suite('bindInput directive', () => {
 
       assert.is(input.value, 'undefined');
     });
+
+    test('handles deep properties', async () => {
+      element.template = () => html`
+        <input ${bindInput(element, 'prop.foo')}>
+      `;
+      await element.updateComplete;
+
+      element.prop = {foo: 'xyz'};
+      await element.updateComplete;
+
+      const inputNode = element.shadowRoot!.querySelector('input')!;
+
+      assert.is(inputNode.value, 'xyz');
+    });
   });
 
   suite('user input', () => {
@@ -157,6 +171,20 @@ suite('bindInput directive', () => {
       input.value = 'bar';
       input.dispatchEvent(new Event('input'));
     });
+
+    test('handles deep properties', async () => {
+      element.template = () => html`
+        <input ${bindInput(element, 'prop.foo')}>
+      `;
+      await element.updateComplete;
+
+      const input = element.shadowRoot!.querySelector('input')!;
+
+      input.value = 'bar';
+      input.dispatchEvent(new Event('input'));
+
+      assert.is((element.prop as {foo: string}).foo, 'bar');
+    });
   });
 
   suite('options.host', () => {
@@ -191,6 +219,41 @@ suite('bindInput directive', () => {
       input.dispatchEvent(new Event('input'));
 
       assert.is(updateRequestCount, 1);
+    });
+  });
+
+  suite('options.validate', () => {
+    let valid: boolean;
+
+    setup(async () => {
+      valid = true;
+      const validate = () => valid;
+      element.template = () => html`
+        <input ${bindInput(element, 'prop', {validate})}>
+      `;
+      await element.updateComplete;
+    });
+
+    test('host value does not change if invalid', async () => {
+      valid = false;
+
+      const inputNode = element.shadowRoot!.querySelector('input')!;
+
+      inputNode.value = 'xyz';
+      inputNode.dispatchEvent(new Event('input'));
+      await element.updateComplete;
+
+      assert.is(element.prop, undefined);
+    });
+
+    test('host value is updated if valid', async () => {
+      const inputNode = element.shadowRoot!.querySelector('input')!;
+
+      inputNode.value = 'xyz';
+      inputNode.dispatchEvent(new Event('input'));
+      await element.updateComplete;
+
+      assert.is(element.prop, 'xyz');
     });
   });
 
