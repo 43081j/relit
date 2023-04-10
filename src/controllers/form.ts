@@ -132,6 +132,8 @@ export class FormController<T extends object> {
 
     const fieldValidators = this.__fieldValidators.get(prop);
 
+    this.errors.delete(prop);
+
     if (fieldValidators) {
       for (const validator of fieldValidators) {
         const result = validator(val);
@@ -156,8 +158,6 @@ export class FormController<T extends object> {
     if (!this.__formNode || this.__formNode !== target) {
       return;
     }
-
-    this.errors.clear();
 
     for (const validator of this.__validators) {
       const result = validator(this.value);
