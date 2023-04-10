@@ -1,7 +1,7 @@
 import type {ReactiveController, ReactiveControllerHost} from 'lit';
-import {ref, createRef} from 'lit/directives/ref.js';
+import {ref} from 'lit/directives/ref.js';
 import type {DirectiveResult} from 'lit/directive.js';
-import type {Ref, RefDirective} from 'lit/directives/ref.js';
+import type {RefDirective} from 'lit/directives/ref.js';
 import {bindInput, type BindInputDirective} from '../directives/bindInput.js';
 
 export interface FormError {
@@ -18,7 +18,7 @@ export type FormValidator<T> = (val: T) => FormError[] | FormError | null;
  */
 export class FormController<T extends object> {
   private __host: ReactiveControllerHost;
-  private __formRef: Ref<HTMLFormElement> = createRef<HTMLFormElement>();
+  private __formNode: HTMLFormElement | undefined = undefined;
   private __fieldValidators: Map<
     PropertyKey,
     Set<FormFieldValidator<unknown>>
@@ -36,7 +36,7 @@ export class FormController<T extends object> {
    * @return {HTMLFormElement|undefined}
    */
   public get form(): HTMLFormElement | undefined {
-    return this.__formRef.value;
+    return this.__formNode;
   }
 
   /**
@@ -130,20 +130,6 @@ export class FormController<T extends object> {
   private __validateInput = (val: unknown, prop: PropertyKey): boolean => {
     let valid = true;
 
-    for (const validator of this.__validators) {
-      const result = validator(this.value);
-
-      if (result) {
-        const asArr = Array.isArray(result) ? result : [result];
-        for (const err of asArr) {
-          if (err.prop === prop) {
-            valid = false;
-          }
-          this.errors.set(err.prop, err.message);
-        }
-      }
-    }
-
     const fieldValidators = this.__fieldValidators.get(prop);
 
     if (fieldValidators) {
@@ -160,10 +146,60 @@ export class FormController<T extends object> {
   };
 
   /**
+   * Fired when the attached form has been submitted
+   * @param {Event} ev Event fired
+   * @return {void}
+   */
+  private __onFormSubmit = (ev: Event): void => {
+    const target = ev.currentTarget;
+
+    if (!this.__formNode || this.__formNode !== target) {
+      return;
+    }
+
+    this.errors.clear();
+
+    for (const validator of this.__validators) {
+      const result = validator(this.value);
+
+      if (result) {
+        const asArr = Array.isArray(result) ? result : [result];
+        for (const err of asArr) {
+          this.errors.set(err.prop, err.message);
+        }
+      }
+    }
+
+    if (this.errors.size > 0) {
+      ev.preventDefault();
+      return;
+    }
+  };
+
+  /**
+   * Fired when the attached form changes
+   * @param {Element|undefined} el Element being attached
+   * @return {void}
+   */
+  private __onRefChanged = (el: Element | undefined): void => {
+    if (this.__formNode) {
+      this.__formNode.removeEventListener('submit', this.__onFormSubmit);
+    }
+
+    this.__formNode = undefined;
+
+    if (el?.nodeName === 'FORM') {
+      const formNode = el as HTMLFormElement;
+      this.__formNode = formNode;
+      el.addEventListener('submit', this.__onFormSubmit);
+    }
+  };
+
+  /**
    * Attaches the controller to a `<form>` element
    * @return {DirectiveResult}
    */
   public attach(): DirectiveResult<typeof RefDirective> {
-    return ref(this.__formRef);
+    return ref(this.__onRefChanged);
   }
 }

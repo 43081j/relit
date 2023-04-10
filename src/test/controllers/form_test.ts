@@ -203,9 +203,24 @@ suite('FormController', () => {
       assert.is(controller.errors.get('email'), 'some error');
     });
 
-    test('field validator can null', async () => {
+    test('field validator can return null', async () => {
       controller.addValidator('email', () => {
         return null;
+      });
+
+      const input =
+        element.shadowRoot!.querySelector<HTMLInputElement>('input')!;
+      input.value = 'foo';
+      input.dispatchEvent(new Event('change'));
+      await element.updateComplete;
+
+      assert.equal(controller.value, {email: 'foo'});
+      assert.is(controller.errors.size, 0);
+    });
+
+    test('field validator can return void', async () => {
+      controller.addValidator('email', () => {
+        return;
       });
 
       const input =
@@ -235,7 +250,13 @@ suite('FormController', () => {
       input.dispatchEvent(new Event('change'));
       await element.updateComplete;
 
-      assert.equal(lastVal, {});
+      assert.is(controller.errors.size, 0);
+
+      const form = element.shadowRoot!.querySelector('form')!;
+      form.dispatchEvent(new Event('submit'));
+      await element.updateComplete;
+
+      assert.is(lastVal, controller.value);
       assert.equal(controller.value, {});
       assert.is(controller.errors.size, 1);
       assert.is(controller.errors.get('email'), 'some error');
