@@ -73,8 +73,9 @@ suite('bindInput directive', () => {
 
   suite('host property', () => {
     test('handles non-existent properties', async () => {
+      const key = 'nonsense' as keyof BindInputDirectiveTest;
       element.template = () => html`
-        <input ${bindInput(element, 'nonsense')}>
+        <input ${bindInput(element, key)}>
       `;
       await element.updateComplete;
 
@@ -86,7 +87,7 @@ suite('bindInput directive', () => {
 
     test('handles null hosts on attribute', async () => {
       element.template = () => html`
-        <input .value=${bindInput(null, 'key')}>
+        <input .value=${bindInput(null, 'a.b')}>
       `;
       await element.updateComplete;
 
@@ -96,8 +97,9 @@ suite('bindInput directive', () => {
     });
 
     test('handles null hosts with non-string prop on attribute', async () => {
+      const key = Symbol() as unknown as 'foo.bar'; // satisfy the type system
       element.template = () => html`
-        <input .value=${bindInput(null, Symbol())}>
+        <input .value=${bindInput(null, key)}>
       `;
       await element.updateComplete;
 
@@ -123,8 +125,9 @@ suite('bindInput directive', () => {
 
   suite('user input', () => {
     test('handles non-existent properties', async () => {
+      const key = 'nonsense' as keyof BindInputDirectiveTest;
       element.template = () => html`
-        <input ${bindInput(element, 'nonsense')}>
+        <input ${bindInput(element, key)}>
       `;
       await element.updateComplete;
 
@@ -162,7 +165,7 @@ suite('bindInput directive', () => {
 
     test('handles null hosts', async () => {
       element.template = () => html`
-        <input ${bindInput(null, 'key')}>
+        <input ${bindInput(null, 'a.b')}>
       `;
       await element.updateComplete;
 

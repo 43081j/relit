@@ -3,7 +3,9 @@ import {nothing, type ReactiveControllerHost} from 'lit';
 import type {
   ElementPart,
   DirectiveParameters,
-  PartInfo
+  PartInfo,
+  DirectiveResult,
+  DirectiveClass
 } from 'lit/directive.js';
 import {PartType} from 'lit/directive.js';
 import delve from 'dlv';
@@ -328,6 +330,10 @@ export class BindInputDirective extends AsyncDirective {
   }
 }
 
+const bindInputDirective = directive(BindInputDirective);
+
+export type BindInputKey<T> = keyof T | `${string}.${string}`;
+
 /**
  * Two-way binds a given property to the input it is defined on.
  *
@@ -341,6 +347,13 @@ export class BindInputDirective extends AsyncDirective {
  *
  * @param {T} host Host object of the property
  * @param {string} key Property to bind
+ * @param {BindInputOptions=} options Input binding options
  * @return {DirectiveResult}
  */
-export const bindInput = directive(BindInputDirective);
+export function bindInput<T, TKey extends BindInputKey<T>>(
+  host: T,
+  key: TKey,
+  options?: BindInputOptions
+): DirectiveResult<DirectiveClass> {
+  return bindInputDirective(host, key, options);
+}

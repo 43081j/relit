@@ -2,7 +2,11 @@ import type {ReactiveController, ReactiveControllerHost} from 'lit';
 import {ref} from 'lit/directives/ref.js';
 import type {DirectiveResult} from 'lit/directive.js';
 import type {RefDirective} from 'lit/directives/ref.js';
-import {bindInput, type BindInputDirective} from '../directives/bindInput.js';
+import {
+  bindInput,
+  type BindInputDirective,
+  type BindInputKey
+} from '../directives/bindInput.js';
 
 export interface FormError {
   prop: PropertyKey;
@@ -54,7 +58,9 @@ export class FormController<T extends object> {
    * @param {string} path Path to bind to in the value
    * @return {DirectiveResult}
    */
-  public bind(path: string): DirectiveResult<typeof BindInputDirective> {
+  public bind(
+    path: BindInputKey<T>
+  ): DirectiveResult<typeof BindInputDirective> {
     return bindInput(this.value, path, {
       host: this.__host,
       validate: this.__validateInput
