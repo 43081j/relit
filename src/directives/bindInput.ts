@@ -176,7 +176,7 @@ class BindInputDirective extends AsyncDirective {
    */
   private __setElement(element: Element): void {
     if (this.__element) {
-      this.__removeListenersFromElement(element);
+      this.__removeListenersFromElement(this.__element);
     }
 
     this.__element = element;
