@@ -20,6 +20,7 @@
     "noUnusedParameters": true,
     "exactOptionalPropertyTypes": true,
     "noImplicitReturns": true,
+    "experimentalDecorators": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
