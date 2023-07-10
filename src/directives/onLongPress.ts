@@ -93,7 +93,7 @@ class LongPressDirective extends AsyncDirective {
    * Start the long press timeout.
    * @returns {void}
    */
-  #initiateTimeout(e: Event) {
+  #initiateTimeout(e: Event): void {
     this.#longPressTimeout = setTimeout(() => {
       this.#longPressCallback?.(e as PointerEvent);
     }, this.#longPressTimeoutMs ?? DEFAULT_LONG_PRESS_TIMEOUT_MS);
@@ -105,7 +105,7 @@ class LongPressDirective extends AsyncDirective {
    * or when the mouse leaves the element.
    * @return {void}
    */
-  #cancelTimeout() {
+  #cancelTimeout(): void {
     clearTimeout(this.#longPressTimeout);
   }
 
@@ -113,7 +113,7 @@ class LongPressDirective extends AsyncDirective {
    * Abort the long press timeout on special occasions.
    * @returns {void}
    */
-  #abort() {
+  #abort(): void {
     this.#cancelTimeout();
   }
 
