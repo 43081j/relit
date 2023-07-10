@@ -34,8 +34,7 @@ class LongPressDirective extends AsyncDirective {
     super(partInfo);
     if (partInfo.type !== PartType.ELEMENT) {
       throw new Error(
-        "Can't bind `onLongPress` directive to anything " +
-          'that is not an element.'
+        'The `onlongPress` directive must be used in an element binding'
       );
     }
     this.#updateElement((partInfo as ElementPart).element);
