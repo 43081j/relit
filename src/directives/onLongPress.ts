@@ -41,7 +41,7 @@ class LongPressDirective extends AsyncDirective {
   }
 
   /** @inheritdoc */
-  render(
+  public render(
     callback: LongPressCallback,
     callbackTimeoutMs = DEFAULT_LONG_PRESS_TIMEOUT_MS
   ) {
@@ -122,12 +122,18 @@ class LongPressDirective extends AsyncDirective {
     this.#cancelTimeout();
   }
 
+  /** @inheritdoc */
   protected override disconnected(): void {
-    this.#detachEvents();
+    if (this.#element) {
+      this.#detachEvents();
+    }
   }
 
+  /** @inheritdoc */
   protected override reconnected(): void {
-    this.#attachEvents();
+    if (this.#element) {
+      this.#attachEvents();
+    }
   }
 }
 
