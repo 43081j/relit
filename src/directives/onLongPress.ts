@@ -1,14 +1,10 @@
 import {ElementPart, nothing} from 'lit';
-import {
-  AsyncDirective,
-  directive,
-  DirectiveParameters
-} from 'lit/async-directive.js';
-import {
+import {AsyncDirective, directive, PartType} from 'lit/async-directive.js';
+import type {
+  DirectiveParameters,
   DirectiveClass,
   DirectiveResult,
-  PartInfo,
-  PartType
+  PartInfo
 } from 'lit/async-directive.js';
 
 type LongPressCallback = (event?: PointerEvent) => void;
