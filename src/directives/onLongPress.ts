@@ -1,4 +1,4 @@
-import {ElementPart, nothing} from 'lit';
+import {ElementPart, noChange, nothing} from 'lit';
 import {AsyncDirective, directive, PartType} from 'lit/async-directive.js';
 import type {
   DirectiveParameters,
@@ -44,22 +44,21 @@ class LongPressDirective extends AsyncDirective {
   public render(
     callback: LongPressCallback,
     callbackTimeoutMs = DEFAULT_LONG_PRESS_TIMEOUT_MS
-  ) {
-    this.#longPressCallback = callback;
-    this.#longPressTimeoutMs = callbackTimeoutMs;
-
-    return nothing;
+  ): unknown {
+    return noChange;
   }
 
   /** @inheritdoc */
   public override update(
     part: ElementPart,
     [callback, callbackTimeoutMs]: DirectiveParameters<this>
-  ): void {
-    this.render(callback, callbackTimeoutMs);
+  ): unknown {
     if (part.element !== this.#element) {
       this.#updateElement(part.element);
     }
+    this.#longPressCallback = callback;
+    this.#longPressTimeoutMs = callbackTimeoutMs;
+    return this.render(callback, callbackTimeoutMs);
   }
 
   #updateElement(element: Element) {
