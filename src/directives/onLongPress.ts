@@ -21,7 +21,7 @@ class LongPressDirective extends AsyncDirective {
    * element. It calls user's callback unless cancel events occur
    * before time's out.
    */
-  #longPressTimeout?: NodeJS.Timeout;
+  #longPressTimeout?: number;
 
   /** Time before the timeout runs out. */
   #longPressTimeoutMs?: number | undefined;
@@ -102,7 +102,7 @@ class LongPressDirective extends AsyncDirective {
   #initiateTimeout(e: Event) {
     this.#longPressTimeout = setTimeout(() => {
       this.#longPressCallback?.(e as PointerEvent);
-    }, this.#longPressTimeoutMs ?? DEFAULT_LONG_PRESS_TIMEOUT_MS);
+    }, this.#longPressTimeoutMs ?? DEFAULT_LONG_PRESS_TIMEOUT_MS) as {} as number;
   }
 
   /**
