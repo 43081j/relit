@@ -29,7 +29,8 @@ class LongPressDirective extends AsyncDirective {
   /** User-defined callback for long-press event */
   #longPressCallback?: LongPressCallback;
 
-  constructor(partInfo: PartInfo) {
+  /** @inheritdoc */
+  public constructor(partInfo: PartInfo) {
     super(partInfo);
     if (partInfo.type !== PartType.ELEMENT) {
       throw new Error(
