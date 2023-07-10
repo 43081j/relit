@@ -1,4 +1,4 @@
-import {ElementPart, noChange, nothing} from 'lit';
+import {ElementPart, noChange} from 'lit';
 import {AsyncDirective, directive, PartType} from 'lit/async-directive.js';
 import type {
   DirectiveParameters,
