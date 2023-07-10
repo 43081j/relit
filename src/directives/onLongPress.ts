@@ -43,7 +43,7 @@ class LongPressDirective extends AsyncDirective {
   /** @inheritdoc */
   public render(
     callback: LongPressCallback,
-    callbackTimeoutMs = DEFAULT_LONG_PRESS_TIMEOUT_MS
+    callbackTimeoutMs: number = DEFAULT_LONG_PRESS_TIMEOUT_MS
   ): unknown {
     return noChange;
   }
