@@ -13,7 +13,7 @@ const DEFAULT_LONG_PRESS_TIMEOUT_MS = 1000;
 
 class LongPressDirective extends AsyncDirective {
   /** Element of the directive. */
-  #element!: Element;
+  #element?: Element;
 
   /**
    * Long press timeout.
@@ -72,15 +72,19 @@ class LongPressDirective extends AsyncDirective {
   }
 
   #attachEvents() {
-    this.#element.addEventListener('pointerdown', this.#onPointerDown);
-    this.#element.addEventListener('pointerup', this.#onPointerUp);
-    this.#element.addEventListener('pointerleave', this.#onPointerLeave);
+    if (this.#element !== undefined) {
+      this.#element.addEventListener('pointerdown', this.#onPointerDown);
+      this.#element.addEventListener('pointerup', this.#onPointerUp);
+      this.#element.addEventListener('pointerleave', this.#onPointerLeave);
+    }
   }
 
   #detachEvents() {
-    this.#element.removeEventListener('pointerdown', this.#onPointerDown);
-    this.#element.removeEventListener('pointerup', this.#onPointerUp);
-    this.#element.removeEventListener('pointerleave', this.#onPointerLeave);
+    if (this.#element !== undefined) {
+      this.#element.removeEventListener('pointerdown', this.#onPointerDown);
+      this.#element.removeEventListener('pointerup', this.#onPointerUp);
+      this.#element.removeEventListener('pointerleave', this.#onPointerLeave);
+    }
   }
 
   // TODO: When the mouse is released and long press event
