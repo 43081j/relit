@@ -9,7 +9,7 @@ import type {
 
 type LongPressCallback = (event?: PointerEvent) => void;
 
-const DEFAULT_LONG_PRESS_TIMEOUT_MS = 1000;
+const DEFAULT_LONG_PRESS_TIMEOUT_MS = 1000 as number;
 
 class LongPressDirective extends AsyncDirective {
   /** Element of the directive. */
