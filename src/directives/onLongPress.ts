@@ -1,118 +1,141 @@
 import {ElementPart, nothing} from 'lit';
 import {
-	Directive,
-	directive,
-	DirectiveClass,
-	DirectiveResult,
-	PartInfo,
-	PartType,
-} from 'lit/directive.js';
+  AsyncDirective,
+  directive,
+  DirectiveParameters
+} from 'lit/async-directive.js';
+import {
+  DirectiveClass,
+  DirectiveResult,
+  PartInfo,
+  PartType
+} from 'lit/async-directive.js';
 
-class LongPressDirective extends Directive {
-	__element!: Element;
-	__fireTimeout?: number;
+type LongPressCallback = (event?: PointerEvent) => void;
 
-	__longPressCallback?: Function;
-	__cancelTimeoutMs?: number;
+const DEFAULT_LONG_PRESS_TIMEOUT_MS = 1000;
 
-	constructor(partInfo: PartInfo) {
-		super(partInfo);
+class LongPressDirective extends AsyncDirective {
+  /** Element of the directive. */
+  #element!: Element;
 
-		if (partInfo.type !== PartType.ELEMENT) {
-			throw new Error(
-				"Can't bind `onLongPress` directive to anything " +
-					'that is not an element'
-			);
-		}
+  /**
+   * Long press timeout.
+   * This timeout initiates when the pointer is pressed on the
+   * element. It calls user's callback unless cancel events occur
+   * before time's out.
+   */
+  #longPressTimeout?: NodeJS.Timeout;
 
-		this.__element = (partInfo as ElementPart).element;
-	}
+  /** Time before the timeout runs out. */
+  #longPressTimeoutMs?: number | undefined;
 
-	render(callback: (event?: Event) => void, cancelTimeoutMs = 2000) {
-		// Cancel timeout/events and discard event listeners
-		this.__abort();
+  /** User-defined callback for long-press event */
+  #longPressCallback?: LongPressCallback;
 
-		this.__longPressCallback = callback;
-		this.__cancelTimeoutMs = cancelTimeoutMs;
+  constructor(partInfo: PartInfo) {
+    super(partInfo);
+    if (partInfo.type !== PartType.ELEMENT) {
+      throw new Error(
+        "Can't bind `onLongPress` directive to anything " +
+          'that is not an element.'
+      );
+    }
+    this.#updateElement((partInfo as ElementPart).element);
+  }
 
-		// Because events were removed from __abort
-		// we create them again
-		this.__bindOnElementMouseDown = this.__onElementMouseDown.bind(this);
-		this.__element.addEventListener('mousedown', this.__bindOnElementMouseDown);
-		this.__bindOnElementMouseUp = this.__onElementMouseUp.bind(this);
-		this.__element.addEventListener('mouseup', this.__bindOnElementMouseUp);
-		this.__bindOnElementMouseLeave = this.__onElementMouseLeave.bind(this);
-		this.__element.addEventListener(
-			'mouseleave',
-			this.__bindOnElementMouseLeave
-		);
+  /** @inheritdoc */
+  render(
+    callback: LongPressCallback,
+    callbackTimeoutMs = DEFAULT_LONG_PRESS_TIMEOUT_MS
+  ) {
+    this.#longPressCallback = callback;
+    this.#longPressTimeoutMs = callbackTimeoutMs;
 
-		return nothing;
-	}
+    return nothing;
+  }
 
-	__onElementMouseDown() {
-		this.__initiateTimeout();
-	}
-	__bindOnElementMouseDown!: (event: Event) => void;
+  /** @inheritdoc */
+  public override update(
+    part: ElementPart,
+    [callback, callbackTimeoutMs]: DirectiveParameters<this>
+  ): void {
+    this.render(callback, callbackTimeoutMs);
+    if (part.element !== this.#element) {
+      this.#updateElement(part.element);
+    }
+  }
 
-	__onElementMouseUp(e: Event) {
-		// TODO: when the mouse is released and long press event
-		// was accepted, we should find a way to cancel the @click
-		// event listener if it exists.
+  #updateElement(element: Element) {
+    // Detach events from previous element
+    if (this.#element !== undefined) {
+      this.#detachEvents();
+    }
+    this.#element = element;
+    this.#attachEvents();
+  }
 
-		this.__cancelTimeout();
-	}
-	__bindOnElementMouseUp!: (event: Event) => void;
+  #attachEvents() {
+    this.#element.addEventListener('pointerdown', this.#onPointerDown);
+    this.#element.addEventListener('pointerup', this.#onPointerUp);
+    this.#element.addEventListener('pointerleave', this.#onPointerLeave);
+  }
 
-	__onElementMouseLeave() {
-		this.__cancelTimeout();
-	}
-	__bindOnElementMouseLeave!: (event: Event) => void;
+  #detachEvents() {
+    this.#element.removeEventListener('pointerdown', this.#onPointerDown);
+    this.#element.removeEventListener('pointerup', this.#onPointerUp);
+    this.#element.removeEventListener('pointerleave', this.#onPointerLeave);
+  }
 
-	/**
-	 * Start the long press timeout,
-	 * when the timeout runs out the user-defined callback is called.
-	 */
-	__initiateTimeout() {
-		this.__fireTimeout = setTimeout(() => {
-			this.__longPressCallback?.(this.__element);
-		}, this.__cancelTimeoutMs);
-	}
+  // TODO: When the mouse is released and long press event
+  // was accepted, we should find a way to cancel the @click
+  // event listener if it exists.
+  #onPointerDown = (e: Event): void => this.#initiateTimeout(e);
+  #onPointerUp = (): void => this.#abort();
+  #onPointerLeave = (): void => this.#abort();
 
-	/**
-	 * Cancel the long press timeout.
-	 * This function is called when the user release the mouse
-	 * or when the mouse leave the element.
-	 */
-	__cancelTimeout() {
-		if (this.__fireTimeout) {
-			clearTimeout(this.__fireTimeout);
-		}
-	}
+  /**
+   * Start the long press timeout.
+   * @returns {void}
+   */
+  #initiateTimeout(e: Event) {
+    this.#longPressTimeout = setTimeout(() => {
+      this.#longPressCallback?.(e as PointerEvent);
+    }, this.#longPressTimeoutMs ?? DEFAULT_LONG_PRESS_TIMEOUT_MS);
+  }
 
-	/**
-	 * Abort the long press timeout on special occasions.
-	 */
-	__abort() {
-		// TODO: should call this.__abort() when the template is removed/destroyed?
-		this.__cancelTimeout();
-		this.__element.removeEventListener(
-			'mousedown',
-			this.__bindOnElementMouseDown
-		);
-		this.__element.removeEventListener('mouseup', this.__bindOnElementMouseUp);
-		this.__element.removeEventListener(
-			'mouseleave',
-			this.__bindOnElementMouseLeave
-		);
-	}
+  /**
+   * Cancel the long press timeout.
+   * This function is called when the user releases the mouse
+   * or when the mouse leaves the element.
+   * @return {void}
+   */
+  #cancelTimeout() {
+    clearTimeout(this.#longPressTimeout);
+  }
+
+  /**
+   * Abort the long press timeout on special occasions.
+   * @returns {void}
+   */
+  #abort() {
+    this.#cancelTimeout();
+  }
+
+  protected override disconnected(): void {
+    this.#detachEvents();
+  }
+
+  protected override reconnected(): void {
+    this.#attachEvents();
+  }
 }
 
 const onLongPressDirective = directive(LongPressDirective);
 
 export function onLongPress(
-	callback: (event?: Event) => void,
-	activateTimeoutMs = 1300
+  callback: LongPressCallback,
+  callbackTimeoutMs = DEFAULT_LONG_PRESS_TIMEOUT_MS
 ): DirectiveResult<DirectiveClass> {
-	return onLongPressDirective(callback, activateTimeoutMs);
+  return onLongPressDirective(callback, callbackTimeoutMs);
 }
