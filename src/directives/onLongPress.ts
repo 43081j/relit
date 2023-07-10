@@ -42,8 +42,8 @@ class LongPressDirective extends AsyncDirective {
 
   /** @inheritdoc */
   public render(
-    callback: LongPressCallback,
-    callbackTimeoutMs: number = DEFAULT_LONG_PRESS_TIMEOUT_MS
+    _callback: LongPressCallback,
+    _callbackTimeoutMs: number = DEFAULT_LONG_PRESS_TIMEOUT_MS
   ): unknown {
     return noChange;
   }
@@ -96,7 +96,7 @@ class LongPressDirective extends AsyncDirective {
   #initiateTimeout(e: Event) {
     this.#longPressTimeout = setTimeout(() => {
       this.#longPressCallback?.(e as PointerEvent);
-    }, this.#longPressTimeoutMs ?? DEFAULT_LONG_PRESS_TIMEOUT_MS) as {} as number;
+    }, this.#longPressTimeoutMs ?? DEFAULT_LONG_PRESS_TIMEOUT_MS);
   }
 
   /**
