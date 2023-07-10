@@ -64,27 +64,23 @@ class LongPressDirective extends AsyncDirective {
 
   #updateElement(element: Element) {
     // Detach events from previous element
-    if (this.#element !== undefined) {
-      this.#detachEvents();
+    if (this.#element) {
+      this.#detachEvents(this.#element);
     }
     this.#element = element;
-    this.#attachEvents();
+    this.#attachEvents(element);
   }
 
-  #attachEvents() {
-    if (this.#element !== undefined) {
-      this.#element.addEventListener('pointerdown', this.#onPointerDown);
-      this.#element.addEventListener('pointerup', this.#onPointerUp);
-      this.#element.addEventListener('pointerleave', this.#onPointerLeave);
-    }
+  #attachEvents(node: Element) {
+    node.addEventListener('pointerdown', this.#onPointerDown);
+    node.addEventListener('pointerup', this.#onPointerUp);
+    node.addEventListener('pointerleave', this.#onPointerLeave);
   }
 
-  #detachEvents() {
-    if (this.#element !== undefined) {
-      this.#element.removeEventListener('pointerdown', this.#onPointerDown);
-      this.#element.removeEventListener('pointerup', this.#onPointerUp);
-      this.#element.removeEventListener('pointerleave', this.#onPointerLeave);
-    }
+  #detachEvents(node: Element) {
+    node.removeEventListener('pointerdown', this.#onPointerDown);
+    node.removeEventListener('pointerup', this.#onPointerUp);
+    node.removeEventListener('pointerleave', this.#onPointerLeave);
   }
 
   // TODO: When the mouse is released and long press event
@@ -125,14 +121,14 @@ class LongPressDirective extends AsyncDirective {
   /** @inheritdoc */
   protected override disconnected(): void {
     if (this.#element) {
-      this.#detachEvents();
+      this.#detachEvents(this.#element);
     }
   }
 
   /** @inheritdoc */
   protected override reconnected(): void {
     if (this.#element) {
-      this.#attachEvents();
+      this.#attachEvents(this.#element);
     }
   }
 }
