@@ -34,7 +34,7 @@ class LongPressDirective extends AsyncDirective {
     super(partInfo);
     if (partInfo.type !== PartType.ELEMENT) {
       throw new Error(
-        'The `onlongPress` directive must be used in an element binding'
+        'The `onLongPress` directive must be used in an element binding'
       );
     }
     this.#updateElement((partInfo as ElementPart).element);
@@ -85,7 +85,7 @@ class LongPressDirective extends AsyncDirective {
   // TODO: When the mouse is released and long press event
   // was accepted, we should find a way to cancel the @click
   // event listener if it exists.
-  #onPointerDown = (e: Event): void => this.#initiateTimeout(e);
+  #onPointerDown = (e: PointerEvent): void => this.#initiateTimeout(e);
   #onPointerUp = (): void => this.#abort();
   #onPointerLeave = (): void => this.#abort();
 
@@ -93,9 +93,9 @@ class LongPressDirective extends AsyncDirective {
    * Start the long press timeout.
    * @returns {void}
    */
-  #initiateTimeout(e: Event): void {
+  #initiateTimeout(e: PointerEvent): void {
     this.#longPressTimeout = setTimeout(() => {
-      this.#longPressCallback?.(e as PointerEvent);
+      this.#longPressCallback?.(e);
     }, this.#longPressTimeoutMs ?? DEFAULT_LONG_PRESS_TIMEOUT_MS);
   }
 
@@ -136,7 +136,13 @@ const onLongPressDirective = directive(LongPressDirective);
 
 export function onLongPress(
   callback: LongPressCallback,
-  callbackTimeoutMs = DEFAULT_LONG_PRESS_TIMEOUT_MS
+  callbackTimeoutMs: number = DEFAULT_LONG_PRESS_TIMEOUT_MS
 ): DirectiveResult<DirectiveClass> {
   return onLongPressDirective(callback, callbackTimeoutMs);
+}
+
+declare global {
+  interface ElementEventMap {
+    pointerdown: PointerEvent;
+  }
 }
