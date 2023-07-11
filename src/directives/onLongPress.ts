@@ -7,7 +7,7 @@ import type {
   PartInfo
 } from 'lit/async-directive.js';
 
-type LongPressCallback = (event?: PointerEvent) => void;
+export type LongPressCallback = (event?: PointerEvent) => void;
 
 const DEFAULT_LONG_PRESS_TIMEOUT_MS = 1000 as number;
 

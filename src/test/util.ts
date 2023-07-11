@@ -40,6 +40,10 @@ export class TestElement extends TestElementBase {}
 
 customElements.define('test-element', TestElement);
 
+export async function sleep(timeoutMs = 1000): Promise<void> {
+  await new Promise((r) => setTimeout(r, timeoutMs));
+}
+
 declare global {
   interface HTMLElementTagNameMap {
     'test-element': TestElement;
