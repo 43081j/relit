@@ -1,9 +1,9 @@
 import {puppeteerLauncher} from '@web/test-runner-puppeteer';
-import {esbuildPlugin} from '@web/dev-server-esbuild';
+// import {esbuildPlugin} from '@web/dev-server-esbuild';
 
 export default {
   nodeResolve: true,
-  files: ['src/**/*_test.ts'],
+  files: ['lib/**/*_test.js'],
   coverage: true,
   coverageConfig: {
     reporters: ['lcov']
@@ -12,11 +12,11 @@ export default {
     puppeteerLauncher()
   ],
   plugins: [
-    esbuildPlugin({
-      ts: true,
-      target: 'auto',
-      tsconfig: './tsconfig.json'
-    })
+   //  esbuildPlugin({
+   //    ts: true,
+   //    target: 'auto',
+   //    tsconfig: './tsconfig.json'
+   //  })
   ],
   testFramework: {
     config: {

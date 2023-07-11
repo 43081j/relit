@@ -8,14 +8,36 @@
     "lib/!(test)"
   ],
   "scripts": {
-    "clean": "rimraf ./lib",
     "lint": "eslint \"src/**/*.ts\"",
-    "prebuild": "npm run clean",
-    "build": "tsc",
-    "test": "web-test-runner",
+    "build": "wireit",
+    "test": "wireit",
     "format": "prettier --write \"src/**/*.ts\"",
     "prepare": "npm run build",
     "prepublishOnly": "npm run lint && npm run test"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc --pretty",
+      "clean": "if-file-deleted",
+      "files": [
+        "tsconfig.json",
+        "src/**/*.ts"
+      ],
+      "output": [
+        "lib"
+      ]
+    },
+    "test": {
+      "command": "web-test-runner",
+      "files": [
+        "lib/**/*_test.js",
+        "web-test-runner.config.mjs"
+      ],
+      "output": [],
+      "dependencies": [
+			"build"
+		]
+    }
   },
   "repository": {
     "type": "git",
@@ -39,9 +61,9 @@
     "hanbi": "^1.0.1",
     "lit": "^2.5.0",
     "prettier": "^2.8.1",
-    "rimraf": "^4.1.2",
     "typescript": "^4.9.4",
-    "uvu": "^0.5.6"
+    "uvu": "^0.5.6",
+    "wireit": "^0.10.0"
   },
   "peerDependencies": {
     "lit": "^2.5.0"
