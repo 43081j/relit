@@ -1,11 +1,12 @@
 {
   "name": "relit",
-  "version": "2.3.0",
+  "version": "2.4.1",
   "description": "A collection of useful utilities for lit components",
   "main": "lib/main.js",
   "type": "module",
   "files": [
-    "lib/!(test)"
+    "lib/",
+    "!lib/test"
   ],
   "scripts": {
     "clean": "rimraf ./lib",
