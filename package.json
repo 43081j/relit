@@ -5,7 +5,8 @@
   "main": "lib/main.js",
   "type": "module",
   "files": [
-    "lib/!(test)"
+    "lib/",
+    "!lib/test"
   ],
   "scripts": {
     "clean": "rimraf ./lib",
