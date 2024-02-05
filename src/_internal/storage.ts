@@ -45,6 +45,7 @@ export abstract class StorageController<T> implements ReactiveController {
     this.__storage = storage;
     this.__key = key;
     this.__initialValue = defaultValue;
+    this.__value = this.__readValueFromStorage();
 
     host.addController(this);
   }

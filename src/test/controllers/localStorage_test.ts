@@ -103,4 +103,35 @@ suite('LocalStorageController', () => {
       assert.is(storageValue, '[5,6]');
     });
   });
+
+  suite('with saved value', () => {
+    setup(() => {
+      window.localStorage.setItem('test-key', JSON.stringify([7, 8]));
+      element = document.createElement('test-element') as TestElement;
+      element.template = () => html`${JSON.stringify(controller.value)}`;
+      document.body.appendChild(element);
+    });
+
+    test('initialises to saved value', async () => {
+      controller = new LocalStorageController(element, 'test-key');
+      element.controllers.push(controller);
+      await element.updateComplete;
+
+      const storageValue = window.localStorage.getItem('test-key');
+      assert.equal(controller.value, [7, 8]);
+      assert.equal(element.shadowRoot!.textContent, '[7,8]');
+      assert.is(storageValue, '[7,8]');
+    });
+
+    test('ignore default value and use saved value', async () => {
+      controller = new LocalStorageController(element, 'test-key', [9, 10]);
+      element.controllers.push(controller);
+      await element.updateComplete;
+
+      const storageValue = window.localStorage.getItem('test-key');
+      assert.equal(controller.value, [7, 8]);
+      assert.equal(element.shadowRoot!.textContent, '[7,8]');
+      assert.is(storageValue, '[7,8]');
+    });
+  });
 });
