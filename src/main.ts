@@ -13,3 +13,4 @@ export * from './controllers/sessionStorage.js';
 export * from './controllers/slot.js';
 export * from './controllers/windowScroll.js';
 export * from './directives/bindInput.js';
+export * from './directives/onLongPress.js';
