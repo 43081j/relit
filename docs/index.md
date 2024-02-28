@@ -7,6 +7,7 @@ The following is the full list of available utilities:
 - [documentVisibility](./documentVisibility.md) - observable [document.visibilityState](https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilityState)
 - [elementSize](./elementSize.md) - element width and height
 - [elementVisibility](./elementVisibility.md) - element visibility
+- [enumProperty](./enumProperty.md) - enum property
 - [head](./head.md) - `<head>` tag management
 - [itemSelection](./itemSelection.md) - manages selection within an array of items
 - [keyBinding](./keyBinding.md) - key bindings (shortcuts) manager
