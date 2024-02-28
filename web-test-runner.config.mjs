@@ -6,7 +6,7 @@ export default {
   files: ['src/**/*_test.ts'],
   coverage: true,
   coverageConfig: {
-    reporters: ['lcov']
+    reporters: ['html', 'lcov']
   },
   browsers: [
     puppeteerLauncher()

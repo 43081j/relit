@@ -1,4 +1,4 @@
-import {html, PropertyDeclarations} from 'lit';
+import {html, PropertyDeclarations, type ReactiveControllerHost} from 'lit';
 import * as assert from 'uvu/assert';
 import {bindInput} from '../../main.js';
 import {TestElementBase} from '../util.js';
@@ -49,34 +49,6 @@ suite('bindInput directive', () => {
     }
   });
 
-  test('does nothing for non-existent properties', async () => {
-    element.template = () => html`
-      <input ${bindInput(element, 'nonsense' as keyof BindInputDirectiveTest)}>
-    `;
-    await element.updateComplete;
-
-    const node = element.shadowRoot!.querySelector('input')!;
-
-    assert.is(node.value, '');
-    assert.is(element.prop, undefined);
-  });
-
-  test('does nothing for non-existent properties (upwards)', async () => {
-    element.template = () => html`
-      <input ${bindInput(element, 'nonsense' as keyof BindInputDirectiveTest)}>
-    `;
-    await element.updateComplete;
-
-    const node = element.shadowRoot!.querySelector('input')!;
-
-    node.value = 'foo';
-    node.dispatchEvent(new Event('input'));
-    await element.updateComplete;
-
-    assert.is(element.prop, undefined);
-    assert.is(element.hasOwnProperty('nonsense'), false);
-  });
-
   test('survives DOM reconnect', async () => {
     element.template = () => html`
       <input ${bindInput(element, 'prop')}>
@@ -97,6 +69,195 @@ suite('bindInput directive', () => {
     inputNode.dispatchEvent(new Event('input'));
 
     assert.is(element.prop, 'xyz');
+  });
+
+  suite('host property', () => {
+    test('handles non-existent properties', async () => {
+      const key = 'nonsense' as keyof BindInputDirectiveTest;
+      element.template = () => html`
+        <input ${bindInput(element, key)}>
+      `;
+      await element.updateComplete;
+
+      const node = element.shadowRoot!.querySelector('input')!;
+
+      assert.is(node.value, '');
+      assert.is(element.prop, undefined);
+    });
+
+    test('handles null hosts on attribute', async () => {
+      element.template = () => html`
+        <input .value=${bindInput(null, 'a.b')}>
+      `;
+      await element.updateComplete;
+
+      const input = element.shadowRoot!.querySelector('input')!;
+
+      assert.is(input.value, 'undefined');
+    });
+
+    test('handles null hosts with non-string prop on attribute', async () => {
+      const key = Symbol() as unknown as 'foo.bar'; // satisfy the type system
+      element.template = () => html`
+        <input .value=${bindInput(null, key)}>
+      `;
+      await element.updateComplete;
+
+      const input = element.shadowRoot!.querySelector('input')!;
+
+      assert.is(input.value, 'undefined');
+    });
+
+    test('handles deep properties', async () => {
+      element.template = () => html`
+        <input ${bindInput(element, 'prop.foo')}>
+      `;
+      await element.updateComplete;
+
+      element.prop = {foo: 'xyz'};
+      await element.updateComplete;
+
+      const inputNode = element.shadowRoot!.querySelector('input')!;
+
+      assert.is(inputNode.value, 'xyz');
+    });
+  });
+
+  suite('user input', () => {
+    test('handles non-existent properties', async () => {
+      const key = 'nonsense' as keyof BindInputDirectiveTest;
+      element.template = () => html`
+        <input ${bindInput(element, key)}>
+      `;
+      await element.updateComplete;
+
+      const node = element.shadowRoot!.querySelector('input')!;
+
+      node.value = 'foo';
+      node.dispatchEvent(new Event('input'));
+      await element.updateComplete;
+
+      assert.is(element.prop, undefined);
+      assert.is(
+        (element as BindInputDirectiveTest & {nonsense: string}).nonsense,
+        'foo'
+      );
+      assert.is(element.hasOwnProperty('nonsense'), true);
+    });
+
+    test('handles non-string root properties', async () => {
+      const key = Symbol();
+      const obj = {
+        [key]: 'foo'
+      };
+      element.template = () => html`
+        <input ${bindInput(obj, key)}>
+      `;
+      await element.updateComplete;
+
+      const input = element.shadowRoot!.querySelector('input')!;
+
+      input.value = 'bar';
+      input.dispatchEvent(new Event('input'));
+
+      assert.is(obj[key], 'bar');
+    });
+
+    test('handles null hosts', async () => {
+      element.template = () => html`
+        <input ${bindInput(null, 'a.b')}>
+      `;
+      await element.updateComplete;
+
+      const input = element.shadowRoot!.querySelector('input')!;
+
+      input.value = 'bar';
+      input.dispatchEvent(new Event('input'));
+    });
+
+    test('handles deep properties', async () => {
+      element.template = () => html`
+        <input ${bindInput(element, 'prop.foo')}>
+      `;
+      await element.updateComplete;
+
+      const input = element.shadowRoot!.querySelector('input')!;
+
+      input.value = 'bar';
+      input.dispatchEvent(new Event('input'));
+
+      assert.is((element.prop as {foo: string}).foo, 'bar');
+    });
+  });
+
+  suite('options.host', () => {
+    let updateRequestCount: number;
+
+    setup(async () => {
+      updateRequestCount = 0;
+
+      const host: ReactiveControllerHost = {
+        requestUpdate() {
+          updateRequestCount++;
+        },
+        addController() {
+          return;
+        },
+        removeController() {
+          return;
+        },
+        updateComplete: Promise.resolve(true)
+      };
+      element.template = () => html`
+        <input .value=${bindInput(element, 'prop', {host})}>
+      `;
+      await element.updateComplete;
+    });
+
+    test('updates host on change', async () => {
+      assert.is(updateRequestCount, 0);
+
+      const input = element.shadowRoot!.querySelector('input')!;
+      input.value = 'foo';
+      input.dispatchEvent(new Event('input'));
+
+      assert.is(updateRequestCount, 1);
+    });
+  });
+
+  suite('options.validate', () => {
+    let valid: boolean;
+
+    setup(async () => {
+      valid = true;
+      const validate = (): boolean => valid;
+      element.template = () => html`
+        <input ${bindInput(element, 'prop', {validate})}>
+      `;
+      await element.updateComplete;
+    });
+
+    test('host value does not change if invalid', async () => {
+      valid = false;
+
+      const inputNode = element.shadowRoot!.querySelector('input')!;
+
+      inputNode.value = 'xyz';
+      inputNode.dispatchEvent(new Event('input'));
+      await element.updateComplete;
+
+      assert.is(element.prop, undefined);
+    });
+
+    test('host value is updated if valid', async () => {
+      const inputNode = element.shadowRoot!.querySelector('input')!;
+
+      inputNode.value = 'xyz';
+      inputNode.dispatchEvent(new Event('input'));
+      await element.updateComplete;
+
+      assert.is(element.prop, 'xyz');
+    });
   });
 
   suite('<input> by property', () => {
@@ -194,6 +355,62 @@ suite('bindInput directive', () => {
     });
   });
 
+  suite('<input type="range">', () => {
+    setup(async () => {
+      element.template = () => html`
+        <input ${bindInput(element, 'prop')} type="range">
+      `;
+      await element.updateComplete;
+    });
+
+    test('propagates value downwards', async () => {
+      element.prop = 10;
+      await element.updateComplete;
+
+      const node = element.shadowRoot!.querySelector('input')!;
+
+      assert.is(node.value, '10');
+    });
+
+    test('propagates value upwards', async () => {
+      const node = element.shadowRoot!.querySelector('input')!;
+
+      node.value = '20';
+      node.dispatchEvent(new Event('change'));
+      await element.updateComplete;
+
+      assert.is(element.prop, 20);
+    });
+  });
+
+  suite('<input type="number">', () => {
+    setup(async () => {
+      element.template = () => html`
+        <input ${bindInput(element, 'prop')} type="number">
+      `;
+      await element.updateComplete;
+    });
+
+    test('propagates value downwards', async () => {
+      element.prop = 100;
+      await element.updateComplete;
+
+      const node = element.shadowRoot!.querySelector('input')!;
+
+      assert.is(node.value, '100');
+    });
+
+    test('propagates value upwards', async () => {
+      const node = element.shadowRoot!.querySelector('input')!;
+
+      node.value = '200';
+      node.dispatchEvent(new Event('change'));
+      await element.updateComplete;
+
+      assert.is(element.prop, 200);
+    });
+  });
+
   suite('<input type="checkbox">', () => {
     setup(async () => {
       element.template = () => html`
@@ -250,6 +467,15 @@ suite('bindInput directive', () => {
 
       assert.is(element.prop, 'xyz');
     });
+
+    test('handles nullish values downwards', async () => {
+      element.prop = null;
+      await element.updateComplete;
+
+      const node = element.shadowRoot!.querySelector('select')!;
+
+      assert.is(node.value, '');
+    });
   });
 
   suite('<select multiple>', () => {
@@ -284,6 +510,17 @@ suite('bindInput directive', () => {
       await element.updateComplete;
 
       assert.equal(element.prop, ['808', '303']);
+    });
+
+    test('handles non-array value downwards', async () => {
+      element.prop = '808';
+      await element.updateComplete;
+
+      const node = element.shadowRoot!.querySelector('select')!;
+      const opts = [...node.selectedOptions].map((opt) => opt.value);
+
+      assert.is(opts.length, 1);
+      assert.equal(opts, ['808']);
     });
   });
 
