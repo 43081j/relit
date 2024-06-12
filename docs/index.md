@@ -12,6 +12,7 @@ The following is the full list of available utilities:
 - [keyBinding](./keyBinding.md) - key bindings (shortcuts) manager
 - [localStorage](./localStorage.md) - items in [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
 - [markdown](./markdown.md) - markdown processing via [marked](https://github.com/markedjs/marked)
+- [onLongPress](./onLongPress.md) - fire callback on long press
 - [permissions](./permissions.md) - track the state of a browser [permission](https://developer.mozilla.org/en-US/docs/Web/API/Permissions/query)
 - [propertyHistory](./propertyHistory.md) - track the history of a property with undo/redo
 - [sessionStorage](./sessionStorage.md) - items in [sessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage)
