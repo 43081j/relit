@@ -74,7 +74,7 @@ suite('bindInput directive', () => {
     await element.updateComplete;
 
     assert.is(element.prop, undefined);
-    assert.is(element.hasOwnProperty('nonsense'), false);
+    assert.is(Object.prototype.hasOwnProperty.call(element, 'nonsense'), false);
   });
 
   test('survives DOM reconnect', async () => {
