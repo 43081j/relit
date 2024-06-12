@@ -408,4 +408,18 @@ suite('ItemSelectionController', () => {
       assert.equal(element.shadowRoot!.textContent, 'Selected: b');
     });
   });
+
+  suite('with items function', () => {
+    setup(async () => {
+      const itemsFn = (): string[] => items;
+      controller = new ItemSelectionController<string>(element, itemsFn);
+      element.controllers.push(controller as ReactiveController);
+      document.body.appendChild(element);
+    });
+
+    test('initialises to default selection', () => {
+      assert.is(controller.selectedItems.length, 0);
+      assert.is(controller.items, items);
+    });
+  });
 });

@@ -15,7 +15,7 @@ export class ItemSelectionController<T> {
    * @return {T[]}
    */
   public get selectedItems(): T[] {
-    return this.__items.filter((_item, idx) => this.__selectedIndices.has(idx));
+    return this.items.filter((_item, idx) => this.__selectedIndices.has(idx));
   }
 
   /**
@@ -23,11 +23,15 @@ export class ItemSelectionController<T> {
    * @return {T[]}
    */
   public get items(): T[] {
+    if (this.__itemsGetter) {
+      return this.__itemsGetter();
+    }
     return this.__items;
   }
 
   private __selectedIndices: Set<number> = new Set<number>();
   private __items: T[] = [];
+  private __itemsGetter?: () => T[];
   private __host: ReactiveControllerHost;
   private __options?: ItemSelectionOptions<T>;
 
@@ -38,11 +42,15 @@ export class ItemSelectionController<T> {
    */
   public constructor(
     host: ReactiveControllerHost,
-    items: T[],
+    items: T[] | (() => T[]),
     options?: ItemSelectionOptions<T>
   ) {
     this.__host = host;
-    this.__items = items;
+    if (typeof items === 'function') {
+      this.__itemsGetter = items;
+    } else {
+      this.__items = items;
+    }
 
     if (options) {
       this.__options = options;
@@ -99,6 +107,7 @@ export class ItemSelectionController<T> {
     }
 
     const [currentSelection] = [...this.__selectedIndices];
+    const items = this.items;
     let newIndex = 0;
 
     if (currentSelection !== undefined) {
@@ -106,8 +115,8 @@ export class ItemSelectionController<T> {
 
       if (newIndex < 0) {
         newIndex = 0;
-      } else if (newIndex >= this.__items.length) {
-        newIndex = this.__items.length - 1;
+      } else if (newIndex >= items.length) {
+        newIndex = items.length - 1;
       }
     }
 
@@ -142,7 +151,9 @@ export class ItemSelectionController<T> {
       throw new Error('selectAll() cannot be used when in single-select mode');
     }
 
-    for (const item of this.__items) {
+    const items = this.items;
+
+    for (const item of items) {
       this.select(item);
     }
   }
@@ -185,7 +196,9 @@ export class ItemSelectionController<T> {
       throw new Error('Index cannot be below 0');
     }
 
-    if (idx >= this.__items.length) {
+    const items = this.items;
+
+    if (idx >= items.length) {
       throw new Error('Index cannot be greater than size of items array');
     }
 
@@ -213,7 +226,7 @@ export class ItemSelectionController<T> {
    * @return {void}
    */
   public toggle(item: T, selected?: boolean): void {
-    const idx = this.__items.indexOf(item);
+    const idx = this.items.indexOf(item);
 
     if (idx === -1) {
       throw new Error('Item was not in items array');
