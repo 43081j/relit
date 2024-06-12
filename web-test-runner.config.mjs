@@ -9,7 +9,7 @@ export default {
     reporters: ['lcov']
   },
   browsers: [
-    puppeteerLauncher()
+    puppeteerLauncher({concurrency: 1})
   ],
   plugins: [
     esbuildPlugin({
