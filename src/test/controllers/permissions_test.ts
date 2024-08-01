@@ -27,5 +27,10 @@ suite('PermissionsController', () => {
     assert.equal(element.shadowRoot!.textContent, 'pending');
   });
 
-  test('observes changes to permission');
+  test('changes from pending to prompt', async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    assert.equal(controller.state, 'prompt');
+    assert.equal(element.shadowRoot!.textContent, 'prompt');
+  });
 });
