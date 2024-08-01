@@ -22,9 +22,9 @@ suite('PermissionsController', () => {
     element.remove();
   });
 
-  test('initialises to prompt', () => {
-    assert.equal(controller.state, 'prompt');
-    assert.equal(element.shadowRoot!.textContent, 'prompt');
+  test('initialises to pending', () => {
+    assert.equal(controller.state, 'pending');
+    assert.equal(element.shadowRoot!.textContent, 'pending');
   });
 
   test('observes changes to permission');
