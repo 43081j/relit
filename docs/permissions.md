@@ -26,30 +26,12 @@ class MyElement extends LitElement {
 The required argument is a [permission name](https://developer.mozilla.org/en-US/docs/Web/API/Permissions/query#name)
 which varies across browsers in some cases.
 
-There is a brief moment until the controller status is resolved to either `prompt`, `granted` or `denied`.
-To intercept this brief undefined state, a new state has been introduced.
-The `AsyncPermissionState` type extends `PermissionState` by `pending` as the initial state of the controller.
+The controller will expose a `state` property which is either a valid
+[PermissionState](https://developer.mozilla.org/en-US/docs/Web/API/PermissionStatus/state)
+or the string `pending`.
 
-```ts
-class MyElement extends LitElement {
-  constructor() {
-    super();
-
-    this._permissionsCtrl = new PermissionsController(this, 'geolocation');
-  }
-
-  render() {
-    const {state} = this._permissionsCtrl;
-
-    return html`
-    ${
-      'geolocation' in navigator && state !== 'pending'
-        ? html`Geolocation permission is ${state}`
-        : null
-    }
-  `;
-}
-```
+Initially, while querying the browser for a state, the state will be set to
+`pending`.
 
 ## Options
 
