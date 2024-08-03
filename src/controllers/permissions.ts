@@ -1,15 +1,22 @@
 import type {ReactiveController, ReactiveControllerHost} from 'lit';
 
 /**
+ * The permission state can be either 'denied', 'granted' or 'prompt'.
+ * While querying the browser for the underlying state, the async permission
+ * state will be set to `pending`.
+ */
+export type AsyncPermissionState = 'pending' | PermissionState;
+
+/**
  * Tracks the status of a given browser permission
  */
 export class PermissionsController {
   /**
-   * Gets the current permission state
-   * @return {PermissionState}
+   * Gets the current async permission state
+   * @return {AsyncPermissionState}
    */
-  public get state(): PermissionState {
-    return this.__status?.state ?? 'prompt';
+  public get state(): AsyncPermissionState {
+    return this.__status?.state ?? 'pending';
   }
 
   private __host: ReactiveControllerHost;
@@ -35,6 +42,8 @@ export class PermissionsController {
   protected async __initialisePermissions(name: PermissionName): Promise<void> {
     this.__status = await navigator.permissions.query({name});
     this.__status.addEventListener('change', this.__onPermissionChanged);
+    // Request an update to reflect the initial state
+    this.__host.requestUpdate();
   }
 
   protected __onPermissionChanged: () => void = (): void => {

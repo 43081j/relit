@@ -26,6 +26,13 @@ class MyElement extends LitElement {
 The required argument is a [permission name](https://developer.mozilla.org/en-US/docs/Web/API/Permissions/query#name)
 which varies across browsers in some cases.
 
+The controller will expose a `state` property which is either a valid
+[PermissionState](https://developer.mozilla.org/en-US/docs/Web/API/PermissionStatus/state)
+or the string `pending`.
+
+Initially, while querying the browser for a state, the state will be set to
+`pending`.
+
 ## Options
 
 N/A
