@@ -26,7 +26,7 @@ function isElement(target: EventTarget): target is Element {
  * @return {boolean}
  */
 function isInputElement(target: EventTarget): target is HTMLInputElement {
-  return isElement(target) && target.nodeName === 'INPUT';
+  return isElement(target) && (target.nodeName === 'INPUT' || 'type' in target);
 }
 
 /**
@@ -38,14 +38,14 @@ function isSelectElement(target: EventTarget): target is HTMLSelectElement {
   return isElement(target) && target.nodeName === 'SELECT';
 }
 
-/**
- * Determines if a target is a textarea element
- * @param {EventTarget} target Target to test
- * @return {boolean}
- */
-function isTextAreaElement(target: EventTarget): target is HTMLTextAreaElement {
-  return isElement(target) && target.nodeName === 'TEXTAREA';
-}
+///**
+// * Determines if a target is a textarea element
+// * @param {EventTarget} target Target to test
+// * @return {boolean}
+// */
+//function isTextAreaElement(target: EventTarget): target is HTMLTextAreaElement {
+//  return isElement(target) && target.nodeName === 'TEXTAREA';
+//}
 
 /**
  * Tracks the value of a form control and propagates data two-way to/from a
@@ -144,26 +144,31 @@ class BindInputDirective extends AsyncDirective {
 
     this.__lastValue = value;
 
-    if (isInputElement(element)) {
-      if (element.type === 'checkbox') {
-        element.checked = value === true;
-      } else {
-        element.value = String(value ?? '');
-      }
-    } else if (isSelectElement(element)) {
-      if (element.multiple) {
-        const valuesArray = Array.isArray(value) ? value : [value];
+    if (isSelectElement(element)) {
+      switch (element.type.toLowerCase()) {
+        case 'select-multiple':
+          const valuesArray = Array.isArray(value) ? value : [value];
 
-        for (const opt of element.options) {
-          if (valuesArray.includes(opt.value)) {
-            opt.selected = true;
+          for (const opt of element.options) {
+            if (valuesArray.includes(opt.value)) {
+              opt.selected = true;
+            }
           }
-        }
-      } else {
-        element.value = String(value ?? '');
+          break;
+        case 'select-one':
+        default:
+          element.value = String(value ?? '');
       }
-    } else if (isTextAreaElement(element)) {
-      element.value = String(value ?? '');
+    } else if (isInputElement(element)) {
+      switch (element.type.toLowerCase()) {
+        case 'checkbox':
+          element.checked = value === true;
+          break;
+        case 'number':
+        case 'textarea':
+        default:
+          element.value = String(value ?? '');
+      }
     } else if ('value' in element) {
       element.value = value;
     }
@@ -227,20 +232,27 @@ class BindInputDirective extends AsyncDirective {
   private __getValueFromElement(element: Element): unknown {
     let value: unknown = undefined;
 
-    if (isInputElement(element)) {
-      if (element.type === 'checkbox') {
-        value = element.checked === true;
-      } else {
-        value = element.value;
+    if (isSelectElement(element)) {
+      switch (element.type.toLowerCase()) {
+        case 'select-multiple':
+          value = [...element.selectedOptions].map((opt) => opt.value);
+          break;
+        case 'select-one':
+        default:
+          value = element.value;
       }
-    } else if (isSelectElement(element)) {
-      if (element.multiple) {
-        value = [...element.selectedOptions].map((opt) => opt.value);
-      } else {
-        value = element.value;
+    } else if (isInputElement(element)) {
+      switch (element.type.toLowerCase()) {
+        case 'checkbox':
+          value = element.checked === true;
+          break;
+        case 'number':
+          value = Number(element.value);
+          break;
+        case 'textarea':
+        default:
+          value = element.value;
       }
-    } else if (isTextAreaElement(element)) {
-      value = element.value;
     } else if ('value' in element) {
       value = element.value;
     }
