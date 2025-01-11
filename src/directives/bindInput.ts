@@ -165,6 +165,10 @@ class BindInputDirective extends AsyncDirective {
           element.checked = value === true;
           break;
         case 'number':
+        case 'date':
+        case 'time':
+          element.valueAsNumber = value as number;
+          break;
         case 'textarea':
         default:
           element.value = String(value ?? '');
@@ -247,7 +251,9 @@ class BindInputDirective extends AsyncDirective {
           value = element.checked === true;
           break;
         case 'number':
-          value = Number(element.value);
+        case 'date':
+        case 'time':
+          value = element.valueAsNumber;
           break;
         case 'textarea':
         default:
