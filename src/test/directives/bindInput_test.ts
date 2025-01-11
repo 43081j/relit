@@ -270,6 +270,7 @@ suite('bindInput directive', () => {
       const node = element.shadowRoot!.querySelector('select')!;
       const opts = [...node.selectedOptions].map((opt) => opt.value);
 
+      assert.is(node.type, 'select-multiple');
       assert.is(opts.length, 2);
       assert.equal(opts, ['808', '303']);
     });
