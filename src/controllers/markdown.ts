@@ -1,4 +1,4 @@
-import {marked} from 'marked';
+import {marked, MarkedOptions} from 'marked';
 import type {
   ReactiveController,
   ReactiveControllerHost,
@@ -8,7 +8,7 @@ import {html} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 
 export interface MarkdownOptions<TKey> {
-  markedOptions?: marked.MarkedOptions;
+  markedOptions?: MarkedOptions;
   property?: TKey;
 }
 
@@ -107,7 +107,8 @@ export class MarkdownController<
    */
   private __processMarkdownFromValue(markdown: string): void {
     const parsed = marked(markdown, {
-      ...this.__options?.markedOptions
+      ...this.__options?.markedOptions,
+      async: false
     });
 
     this.value = html`${unsafeHTML(parsed)}`;

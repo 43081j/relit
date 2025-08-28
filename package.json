@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@types/marked": "^4.0.8",
-    "marked": "^4.2.12",
+    "marked": "^16.2.1",
     "tslib": "^2.6.3"
   }
 }

@@ -80,17 +80,20 @@ suite('MarkdownController', () => {
       });
 
       test('recomputes value if options changed', async () => {
-        assert.match(element.shadowRoot!.innerHTML, '<h1 id="foo">foo</h1>');
+        await controller.setValue('# foo\n~~bar~~');
+        await element.updateComplete;
+
+        assert.match(element.shadowRoot!.innerHTML, '<del>bar</del>');
 
         controller.options = {
           markedOptions: {
-            headerIds: false
+            gfm: false
           }
         };
 
         await element.updateComplete;
 
-        assert.match(element.shadowRoot!.innerHTML, '<h1>foo</h1>');
+        assert.match(element.shadowRoot!.innerHTML, '~~bar~~');
       });
 
       test('does not recompute if options same', async () => {
