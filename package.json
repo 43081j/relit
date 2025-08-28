@@ -9,7 +9,7 @@
     "!lib/test"
   ],
   "scripts": {
-    "clean": "rimraf ./lib",
+    "clean": "premove ./lib",
     "lint": "eslint \"src/**/*.ts\"",
     "prebuild": "npm run clean",
     "build": "tsc",
@@ -38,8 +38,8 @@
     "eslint-config-google": "^0.14.0",
     "hanbi": "^1.0.1",
     "lit": "^3.0.0",
+    "premove": "^4.0.0",
     "prettier": "^3.3.2",
-    "rimraf": "^5.0.7",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.13.0",
     "uvu": "^0.5.6"
